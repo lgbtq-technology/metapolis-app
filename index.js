@@ -12,6 +12,7 @@ router.get('/auth', function (req, res) {
     slackFetch('https://slack.com/api/oauth.access', {
         client_id,
         client_secret,
+        redirect_uri: 'http://' + req.headers.host + '/auth',
         code: url.parse(req.url, true).query.code
     }).then(function (body) { 
         if (body.access_token) {
@@ -33,8 +34,9 @@ router.get('/auth', function (req, res) {
 });
 
 router.get('/', function (req, res) {
+    let self = 'http://' + req.headers.host + '/auth';
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.end("<a href='https://slack.com/oauth/authorize?client_id=" + client_id + "&scope=files:read%20files:write:user'>Go</a>");
+    res.end("<a href='https://slack.com/oauth/authorize?client_id=" + client_id + "&scope=files:read%20files:write:user&redirect_uri=" + self + "'>Go</a>");
 });
 
 http.createServer(function (req, res) {
