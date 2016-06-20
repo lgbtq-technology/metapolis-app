@@ -8,6 +8,11 @@ const qs = require('querystring');
 const client_id = process.env.SLACK_APP_CLIENT_ID;
 const client_secret = process.env.SLACK_APP_CLIENT_SECRET;
 
+if (!client_id || !client_secret) {
+    console.warn("SLACK_APP_CLIENT_ID and SLACK_APP_CLIENT_SECRET must be set to operate");
+    process.exit(1)
+}
+
 router.get('/auth', function (req, res) {
     slackFetch('https://slack.com/api/oauth.access', {
         client_id,
