@@ -8,9 +8,11 @@ const fs = require('fs');
 const trumpet = require('trumpet');
 const pump = require('pump');
 const path = require('path');
+const jwt = require('jwt-simple');
 
 const client_id = process.env.SLACK_APP_CLIENT_ID;
 const client_secret = process.env.SLACK_APP_CLIENT_SECRET;
+const KEY = 'once there was a little boy with a curl in the middle of his forehead';
 
 if (!client_id || !client_secret) {
     console.warn("SLACK_APP_CLIENT_ID and SLACK_APP_CLIENT_SECRET must be set to operate");
@@ -33,8 +35,10 @@ router.get('/auth', function (req, res) {
         return slackFetch('https://slack.com/api/auth.test', {
             token: token
         }).then(function (body) {
-            res.setHeader('Content-Type', 'text/plain');
-            prune(token, body.user_id, res);
+            const tok = jwt.encode({access_token: token, user_id: body.user_id, time: Date.now()}, KEY);
+            res.setHeader('Location', `/menu?auth=${tok}`);
+            res.statusCode = 302;
+            res.end();
         })
     }).catch(function (err) {
         console.warn(err.stack || err);
@@ -42,14 +46,36 @@ router.get('/auth', function (req, res) {
     });
 });
 
+router.get('/menu', function (req, res) {
+    const d = getToken(req);
+    if (d) {
+        const renderer = render('menu.html', res);
+        renderer.selectAll('form', el => {
+            el.getAttribute('action', val => {
+                el.setAttribute('action', `${val}?auth=${d.auth}`);
+            });
+        });
+        renderer.done();
+    } else {
+        res.end('token expired');
+    }
+});
+
+router.post('/purge', function (req, res) {
+    const d = getToken(req);
+    if (d) {
+        prune(d.tok.access_token, d.tok.user_id, res);
+    } else {
+        res.end('token expired');
+    }
+});
+
 router.get('/', function (req, res) {
     const self = `http://${req.headers.host}/auth`;
     const authurl = `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user&redirect_uri=${self}`;
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    const tr = trumpet();
+    const tr = render('auth.html', res);
     tr.select("#authurl").setAttribute('href', authurl);
-
-    pump(fs.createReadStream(path.resolve(__dirname, 'auth.html')), tr, res);
+    tr.done();
 });
 
 http.createServer(function (req, res) {
@@ -104,4 +130,28 @@ function slackFetch(url, args) {
         if (body.ok) return body;
         throw new Error(body.error);
     });
+}
+
+function render(template, res) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    const tr = trumpet();
+    tr.done = function (cb) {
+        pump(fs.createReadStream(path.resolve(__dirname, template)), tr, res, cb || (err => {
+            if (err) {
+                console.warn(err.stack || err);
+                res.end('error');
+            }
+        }));
+    };
+    return tr;
+}
+
+function getToken(req) {
+    const query = qs.parse(req._parsedUrl.query);
+    const tok = jwt.decode(query.auth, KEY);
+    if (tok.time + 3600000 < Date.now()) {
+        return null;
+    } else {
+        return { tok, auth: query.auth };
+    }
 }
