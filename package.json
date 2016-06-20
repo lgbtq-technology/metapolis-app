@@ -18,6 +18,8 @@
   "homepage": "https://github.com/lgbtq-technology/lgbtq-helper-app#readme",
   "dependencies": {
     "node-fetch": "^1.3.3",
-    "router": "^1.1.3"
+    "pump": "^1.0.1",
+    "router": "^1.1.3",
+    "trumpet": "^1.7.2"
   }
 }

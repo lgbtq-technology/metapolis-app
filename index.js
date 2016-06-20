@@ -4,6 +4,10 @@ const router = require('router')();
 const fetch = require('node-fetch');
 const url = require('url');
 const qs = require('querystring');
+const fs = require('fs');
+const trumpet = require('trumpet');
+const pump = require('pump');
+const path = require('path');
 
 const client_id = process.env.SLACK_APP_CLIENT_ID;
 const client_secret = process.env.SLACK_APP_CLIENT_SECRET;
@@ -39,9 +43,13 @@ router.get('/auth', function (req, res) {
 });
 
 router.get('/', function (req, res) {
-    let self = 'http://' + req.headers.host + '/auth';
+    const self = `http://${req.headers.host}/auth`;
+    const authurl = `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user&redirect_uri=${self}`;
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.end("<a href='https://slack.com/oauth/authorize?client_id=" + client_id + "&scope=files:read%20files:write:user&redirect_uri=" + self + "'>Go</a>");
+    const tr = trumpet();
+    tr.select("#authurl").setAttribute('href', authurl);
+
+    pump(fs.createReadStream(path.resolve(__dirname, 'auth.html')), tr, res);
 });
 
 http.createServer(function (req, res) {
