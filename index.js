@@ -49,9 +49,17 @@ router.get('/auth', function (req, res) {
 });
 
 router.get('/menu', function (req, res) {
+    menu(null, req, res);
+});
+
+function menu(message, req, res) {
     const d = getToken(req);
     if (d) {
         render('menu.html', tr => {
+          if (message) {
+              tr.select('.Messages').createWriteStream().end(message);
+          }
+          
           tr.selectAll('form', el => {
               el.getAttribute('action', val => {
                   el.setAttribute('action', `${val}?auth=${d.auth}`);
@@ -62,12 +70,14 @@ router.get('/menu', function (req, res) {
     } else {
         res.end('token expired');
     }
-});
+}
 
-router.post('/purge', function (req, res) {
+router.post('/purge', function (req, res, next) {
     const d = getToken(req);
     if (d) {
-        prune(d.tok.access_token, d.tok.user_id, res);
+        prune(d.tok.access_token, d.tok.user_id).then(message => {
+          menu(message, req, res);
+        }).catch(next);
     } else {
         res.end('token expired');
     }
@@ -92,25 +102,22 @@ http.createServer(function (req, res) {
     });
 }).listen(process.env.PORT || 40617);
 
-function prune(token, user_id, res) {
-    slackFetch('https://slack.com/api/files.list', {
+function prune(token, user_id, nfiles) {
+    return slackFetch('https://slack.com/api/files.list', {
         token,
         user: user_id,
         ts_to: Math.floor((Date.now() - 86400000 * 7) / 1000),
         types: 'images',
         count: 1000
-    }).then(function (body) {
+    }).then(body => {
         if (body.files.length) {
-            return deleteAll(token, body.files, res).then(function () {
-                return prune(token, user_id, res);
-            });
+            return deleteAll(token, body.files)
+              .then(() => prune(token, user_id, nfiles || 0 + body.files.length));
+        } else if (nfiles) {
+            return `Removed ${nfiles} files`;
         } else {
-            res.end('done');
+            return "No files to delete";
         }
-    }).catch(function (err) {
-        console.warn(err.stack || err);
-        res.statusCode = 500;
-        res.end('error');
     })
 }
 
@@ -142,14 +149,14 @@ function render(template, fn) {
     const tr = trumpet();
     const layout = trumpet();
     return P.resolve(tr).then(fn).then(res => {
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      const a = pump(fs.createReadStream(path.resolve(__dirname, 'layout.html')), layout, res);
-      const main = layout.select('main').createWriteStream();
-      const b = pump(fs.createReadStream(path.resolve(__dirname, template)), tr, main);
-      return P.join(a, b).catch(err => {
-        console.warn(err.stack || err);
-        res.end('error');
-      });
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        const a = pump(fs.createReadStream(path.resolve(__dirname, 'layout.html')), layout, res);
+        const main = layout.select('main').createWriteStream();
+        const b = pump(fs.createReadStream(path.resolve(__dirname, template)), tr, main);
+        return P.join(a, b).catch(err => {
+            console.warn(err.stack || err);
+            res.end('error');
+        });
     });
 }
 
