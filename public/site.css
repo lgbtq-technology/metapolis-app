@@ -30,6 +30,11 @@ h2 {
   font-size: 1.5rem;
 }
 
+/* Clean up */
+button {
+  margin: 0;
+}
+
 /* Layout */
 
 html, body {
@@ -43,6 +48,7 @@ main {
 
 /* Components */
 .Button {
+  text-decoration: none;
   border: none;
   border-radius: 0.25em;
   padding: 1em;
