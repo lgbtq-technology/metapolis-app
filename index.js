@@ -94,13 +94,20 @@ router.get('/', function (req, res) {
 
 router.use(ecstatic({ root: path.resolve(__dirname, 'public') }));
 
-http.createServer(function (req, res) {
+const server = http.createServer(function (req, res) {
     router(req, res, function (e) {
         if (e) console.warn(e.stack || e)
         res.statusCode = 404;
         res.end('404');
     });
-}).listen(process.env.PORT || 40617);
+}).listen(process.env.PORT || 40617, function (err) {
+    if (err) {
+        console.warn(err);
+        process.exit(1);
+    } else {
+        console.log(`Listening on port ${server.address().port}`);
+    }
+});
 
 function prune(token, user_id, nfiles) {
     return slackFetch('https://slack.com/api/files.list', {
