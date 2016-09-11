@@ -1,0 +1,53 @@
+/* Box Sizing */
+
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+/* Type Rhythm */
+html {
+  font-size: 100%;
+  line-height: 1.5rem;
+  color: black;
+  background-color: white;
+  font-family: 'Lato', 'Helvetica', sans-serif;;
+}
+
+*, *:before, *:after {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+/* Layout */
+
+html, body {
+  margin: 0;
+}
+
+main {
+  max-width: 50rem;
+  margin: 3em auto;
+}
+
+// Components
+.Button {
+  border-radius: 0.25em;
+  padding: 1em;
+}
+
+.Masthead {
+  background-color: #bbb;
+  padding: 1em;
+}
