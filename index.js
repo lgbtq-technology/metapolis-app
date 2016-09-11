@@ -10,6 +10,7 @@ const path = require('path');
 const jwt = require('jwt-simple');
 const P = require('bluebird');
 const pump = P.promisify(require('pump'));
+const ecstatic = require('ecstatic');
 
 const client_id = process.env.SLACK_APP_CLIENT_ID;
 const client_secret = process.env.SLACK_APP_CLIENT_SECRET;
@@ -80,6 +81,8 @@ router.get('/', function (req, res) {
       return res;
     });
 });
+
+router.use(ecstatic({ root: path.resolve(__dirname, 'public') }));
 
 http.createServer(function (req, res) {
     router(req, res, function (e) {
