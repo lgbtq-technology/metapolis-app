@@ -6,9 +6,10 @@ const url = require('url');
 const qs = require('querystring');
 const fs = require('fs');
 const trumpet = require('trumpet');
-const pump = require('pump');
 const path = require('path');
 const jwt = require('jwt-simple');
+const P = require('bluebird');
+const pump = P.promisify(require('pump'));
 
 const client_id = process.env.SLACK_APP_CLIENT_ID;
 const client_secret = process.env.SLACK_APP_CLIENT_SECRET;
@@ -49,13 +50,14 @@ router.get('/auth', function (req, res) {
 router.get('/menu', function (req, res) {
     const d = getToken(req);
     if (d) {
-        const renderer = render('menu.html', res);
-        renderer.selectAll('form', el => {
-            el.getAttribute('action', val => {
-                el.setAttribute('action', `${val}?auth=${d.auth}`);
-            });
+        render('menu.html', tr => {
+          tr.selectAll('form', el => {
+              el.getAttribute('action', val => {
+                  el.setAttribute('action', `${val}?auth=${d.auth}`);
+              });
+          });
+          return res;
         });
-        renderer.done();
     } else {
         res.end('token expired');
     }
@@ -73,9 +75,10 @@ router.post('/purge', function (req, res) {
 router.get('/', function (req, res) {
     const self = `http://${req.headers.host}/auth`;
     const authurl = `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user&redirect_uri=${self}`;
-    const tr = render('auth.html', res);
-    tr.select("#authurl").setAttribute('href', authurl);
-    tr.done();
+    render('auth.html', tr => {
+      tr.select("#authurl").setAttribute('href', authurl);
+      return res;
+    });
 });
 
 http.createServer(function (req, res) {
@@ -90,7 +93,7 @@ function prune(token, user_id, res) {
     slackFetch('https://slack.com/api/files.list', {
         token,
         user: user_id,
-        ts_to: Math.floor((Date.now() - 86400000 * 30) / 1000),
+        ts_to: Math.floor((Date.now() - 86400000 * 7) / 1000),
         types: 'images',
         count: 1000
     }).then(function (body) {
@@ -132,18 +135,19 @@ function slackFetch(url, args) {
     });
 }
 
-function render(template, res) {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+function render(template, fn) {
     const tr = trumpet();
-    tr.done = function (cb) {
-        pump(fs.createReadStream(path.resolve(__dirname, template)), tr, res, cb || (err => {
-            if (err) {
-                console.warn(err.stack || err);
-                res.end('error');
-            }
-        }));
-    };
-    return tr;
+    const layout = trumpet();
+    return P.resolve(tr).then(fn).then(res => {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      const a = pump(fs.createReadStream(path.resolve(__dirname, 'layout.html')), layout, res);
+      const main = layout.select('main').createWriteStream();
+      const b = pump(fs.createReadStream(path.resolve(__dirname, template)), tr, main);
+      return P.join(a, b).catch(err => {
+        console.warn(err.stack || err);
+        res.end('error');
+      });
+    });
 }
 
 function getToken(req) {
