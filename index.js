@@ -65,6 +65,12 @@ function menu(message, req, res) {
                   el.setAttribute('action', `${val}?auth=${d.auth}`);
               });
           });
+          
+          tr.selectAll('a', el => {
+              el.getAttribute('href', val => {
+                  el.setAttribute('href', `${val}?auth=${d.auth}`);
+              });
+          });
           return res;
         });
     } else {
