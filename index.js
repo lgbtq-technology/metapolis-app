@@ -11,6 +11,7 @@ const jwt = require('jwt-simple');
 const P = require('bluebird');
 const pump = P.promisify(require('pump'));
 const ecstatic = require('ecstatic');
+const multer = require('multer');
 
 const client_id = process.env.SLACK_APP_CLIENT_ID;
 const client_secret = process.env.SLACK_APP_CLIENT_SECRET;
@@ -59,16 +60,26 @@ function menu(message, ctx) {
 
 router.post('/purge', context(function (ctx) {
     if (ctx.token) {
-        return prune(ctx.token).then(message => {
-          return menu(message, ctx);
+        prune(ctx.token).then(message => {
+          menu(message, ctx);
         }).catch(ctx.next);
     } else {
         res.end('token expired');
     }
 }));
 
+router.get('/upload', context(ctx => {
+    return ctx.render('upload.html');
+}));
+
+const uploads = multer({ dest: path.resolve(__dirname, 'storage/temp') });
+router.post('/upload', uploads.any(), function (req, res) {
+    console.warn(req.files);
+    res.end('being built');
+});
+
 router.get('/', context(function (ctx) {
-    const self = `http://${ctx.req.headers.host}/auth`;
+    const self = `http://${req.headers.host}/auth`;
     const authurl = `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user&redirect_uri=${self}`;
     return ctx.render('auth.html', tr => {
       tr.select("#authurl").setAttribute('href', authurl);
@@ -111,7 +122,7 @@ function prune(token, nfiles) {
         count: 1000
     }).then(body => {
         if (body.files.length) {
-            return deleteAll(token.access_token, body.files)
+            return deleteAll(token, body.files)
               .then(() => prune(token, nfiles || 0 + body.files.length));
         } else if (nfiles) {
             return `Removed ${nfiles} files`;
@@ -160,7 +171,7 @@ function context(handler) {
                     const layout = trumpet();
                     if (tokenData) {
                         layout.selectAll('.Masthead h1, title', el => {
-                          el.createWriteStream().end(`${token.team_name} Helper`);
+                            el.createWriteStream().end(`${token.team_name} Helper`);
                         });
                         
                         tr.selectAll('form', el => {
