@@ -29,76 +29,63 @@ router.get('/auth', function (req, res) {
         code: url.parse(req.url, true).query.code
     }).then(function (body) { 
         if (body.access_token) {
-            return body.access_token;
+            return body;
         } else {
             throw new Error("No access token granted");
         }
     }).then(function (token) {
-        return slackFetch('https://slack.com/api/auth.test', {
-            token: token
-        }).then(function (body) {
-            const tok = jwt.encode({access_token: token, user_id: body.user_id, time: Date.now()}, KEY);
-            res.setHeader('Location', `/menu?auth=${tok}`);
-            res.statusCode = 302;
-            res.end();
-        })
+        const tok = jwt.encode(Object.assign(token, { time: Date.now() }), KEY);
+        res.setHeader('Location', `/menu?auth=${tok}`);
+        res.statusCode = 302;
+        res.end();
     }).catch(function (err) {
         console.warn(err.stack || err);
         res.end('error');
     });
 });
 
-router.get('/menu', function (req, res) {
-    menu(null, req, res);
-});
+router.get('/menu', context(function (ctx) {
+    menu(null, ctx);
+}));
 
-function menu(message, req, res) {
-    const d = getToken(req);
-    if (d) {
-        render('menu.html', tr => {
-          if (message) {
-              tr.select('.Messages').createWriteStream().end(message);
-          }
-          
-          tr.selectAll('form', el => {
-              el.getAttribute('action', val => {
-                  el.setAttribute('action', `${val}?auth=${d.auth}`);
-              });
-          });
-          
-          tr.selectAll('a', el => {
-              el.getAttribute('href', val => {
-                  el.setAttribute('href', `${val}?auth=${d.auth}`);
-              });
-          });
-          return res;
-        });
-    } else {
-        res.end('token expired');
-    }
+function menu(message, ctx) {
+    if (!ctx.token) throw new Error("No token found");
+    return ctx.render('menu.html', tr => {
+        if (message) {
+            tr.select('.Messages').createWriteStream().end(message);
+        }
+    });
 }
 
-router.post('/purge', function (req, res, next) {
-    const d = getToken(req);
-    if (d) {
-        prune(d.tok.access_token, d.tok.user_id).then(message => {
-          menu(message, req, res);
-        }).catch(next);
+router.post('/purge', context(function (ctx) {
+    if (ctx.token) {
+        prune(ctx.token).then(message => {
+          menu(message, ctx);
+        }).catch(ctx.next);
     } else {
         res.end('token expired');
     }
-});
+}));
 
-router.get('/', function (req, res) {
+router.get('/', context(function (ctx) {
     const self = `http://${req.headers.host}/auth`;
     const authurl = `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user&redirect_uri=${self}`;
-    render('auth.html', tr => {
+    return ctx.render('auth.html', tr => {
       tr.select("#authurl").setAttribute('href', authurl);
-      return res;
     });
-});
+}));
 
 router.use(ecstatic({ root: path.resolve(__dirname, 'public') }));
+
+router.use(function (err, req, res, next) {
+    if (err.statusCode) {
+        res.statusCode = err.statusCode;
+    } else {
+        res.statusCode = 500;
+    }
+    console.warn(err.stack || err);
+    res.end('error');
+});
 
 const server = http.createServer(function (req, res) {
     router(req, res, function (e) {
@@ -115,17 +102,17 @@ const server = http.createServer(function (req, res) {
     }
 });
 
-function prune(token, user_id, nfiles) {
+function prune(token, nfiles) {
     return slackFetch('https://slack.com/api/files.list', {
-        token,
-        user: user_id,
+        token: token.access_token,
+        user: token.user_id,
         ts_to: Math.floor((Date.now() - 86400000 * 7) / 1000),
         types: 'images',
         count: 1000
     }).then(body => {
         if (body.files.length) {
             return deleteAll(token, body.files)
-              .then(() => prune(token, user_id, nfiles || 0 + body.files.length));
+              .then(() => prune(token, nfiles || 0 + body.files.length));
         } else if (nfiles) {
             return `Removed ${nfiles} files`;
         } else {
@@ -158,19 +145,48 @@ function slackFetch(url, args) {
     });
 }
 
-function render(template, fn) {
-    const tr = trumpet();
-    const layout = trumpet();
-    return P.resolve(tr).then(fn).then(res => {
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        const a = pump(fs.createReadStream(path.resolve(__dirname, 'layout.html')), layout, res);
-        const main = layout.select('main').createWriteStream();
-        const b = pump(fs.createReadStream(path.resolve(__dirname, template)), tr, main);
-        return P.join(a, b).catch(err => {
-            console.warn(err.stack || err);
-            res.end('error');
-        });
-    });
+function context(handler) {
+    return function (req, res, next) {
+        return P.try(() => {
+            const tokenData = getToken(req);
+            console.warn(tokenData);
+            const token = tokenData && tokenData.tok;
+            return {
+                req,
+                res,
+                token,
+                render: (template, fn) => {
+                    const tr = trumpet();
+                    const layout = trumpet();
+                    if (tokenData) {
+                        layout.selectAll('.Masthead h1, title', el => {
+                          el.createWriteStream().end(`${token.team_name} Helper`);
+                        });
+                        
+                        tr.selectAll('form', el => {
+                            el.getAttribute('action', val => {
+                                el.setAttribute('action', `${val}?auth=${tokenData.auth}`);
+                            });
+                        });
+                        
+                        tr.selectAll('a', el => {
+                            el.getAttribute('href', val => {
+                                el.setAttribute('href', `${val}?auth=${tokenData.auth}`);
+                            });
+                        });
+                    }
+                
+                    return P.resolve(tr).then(fn).then(() => {
+                        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+                        const a = pump(fs.createReadStream(path.resolve(__dirname, 'layout.html')), layout, res);
+                        const main = layout.select('main').createWriteStream();
+                        const b = pump(fs.createReadStream(path.resolve(__dirname, template)), tr, main);
+                        return P.join(a, b);
+                    });
+                }
+            };
+        }).then(handler).catch(next);
+    };
 }
 
 function getToken(req) {
