@@ -14,10 +14,10 @@ const ecstatic = require('ecstatic');
 
 const client_id = process.env.SLACK_APP_CLIENT_ID;
 const client_secret = process.env.SLACK_APP_CLIENT_SECRET;
-const KEY = 'once there was a little boy with a curl in the middle of his forehead';
+const KEY = process.env.JWT_KEY;
 
-if (!client_id || !client_secret) {
-    console.warn("SLACK_APP_CLIENT_ID and SLACK_APP_CLIENT_SECRET must be set to operate");
+if (!client_id || !client_secret || !KEY) {
+    console.warn("SLACK_APP_CLIENT_ID and SLACK_APP_CLIENT_SECRET and JWT_KEY must be set to operate");
     process.exit(1)
 }
 
