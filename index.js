@@ -59,8 +59,8 @@ function menu(message, ctx) {
 
 router.post('/purge', context(function (ctx) {
     if (ctx.token) {
-        prune(ctx.token).then(message => {
-          menu(message, ctx);
+        return prune(ctx.token).then(message => {
+          return menu(message, ctx);
         }).catch(ctx.next);
     } else {
         res.end('token expired');
@@ -68,7 +68,7 @@ router.post('/purge', context(function (ctx) {
 }));
 
 router.get('/', context(function (ctx) {
-    const self = `http://${req.headers.host}/auth`;
+    const self = `http://${ctx.req.headers.host}/auth`;
     const authurl = `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user&redirect_uri=${self}`;
     return ctx.render('auth.html', tr => {
       tr.select("#authurl").setAttribute('href', authurl);
@@ -111,7 +111,7 @@ function prune(token, nfiles) {
         count: 1000
     }).then(body => {
         if (body.files.length) {
-            return deleteAll(token, body.files)
+            return deleteAll(token.access_token, body.files)
               .then(() => prune(token, nfiles || 0 + body.files.length));
         } else if (nfiles) {
             return `Removed ${nfiles} files`;
@@ -191,6 +191,7 @@ function context(handler) {
 
 function getToken(req) {
     const query = qs.parse(req._parsedUrl.query);
+    if (!query.auth) return null;
     const tok = jwt.decode(query.auth, KEY);
     if (tok.time + 3600000 < Date.now()) {
         return null;
