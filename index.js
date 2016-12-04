@@ -1,7 +1,7 @@
 "use strict";
 const http = require('http');
 const router = require('router')();
-const fetch = require('node-fetch');
+const fetch = require('isomorphic-fetch');
 const url = require('url');
 const qs = require('querystring');
 const fs = require('fs');
