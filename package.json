@@ -27,5 +27,22 @@
     "pump": "^1.0.1",
     "router": "^1.1.3",
     "trumpet": "^1.7.2"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "rules": {
+      "valid-typeof": "error",
+      "no-undef": "error"
+    },
+    "env": {
+      "browser": true,
+      "node": true
+    }
   }
 }
