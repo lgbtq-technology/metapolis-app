@@ -5,6 +5,7 @@ import slackFetch from '../lib/slack-fetch';
 import jwt from 'jwt-simple';
 import url from 'url';
 import cookie from 'cookie';
+import getToken from '../lib/get-token';
 
 export default (Component) => {
 	return class extends React.Component {
@@ -26,7 +27,7 @@ export default (Component) => {
 					throw "SLACK_APP_CLIENT_ID and SLACK_APP_CLIENT_SECRET and JWT_KEY must be set to operate";
 				}
 				
-				const cookies = req.headers.cookie && cookie.parse(req.headers['cookie']);
+				const token = getToken(req);
 				
 				if (query.code) {
           const body = await slackFetch('https://slack.com/api/oauth.access', {
@@ -42,20 +43,31 @@ export default (Component) => {
           const tok = jwt.encode(Object.assign(body, { time: Date.now() }), KEY);
           res.setHeader('Set-Cookie', cookie.serialize('auth', tok));
           return {
-            loggedIn: true
+            loggedIn: true,
+            token: tok
           };
-				} else if (cookies.auth && jwt.decode(cookies.auth, KEY)) {
+				} else if (token) {
   				return {
-  				  loggedIn: true
+  				  loggedIn: true,
+  				  token
 				  };
 				}
 	
 				return {
 					authurl: `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user&redirect_uri=${self}`
 				}
+			} else {
+			 if (window.auth) {
+  			 return window.auth
+			 }
 			}
 		}
-	
+		
+		constructor(props) {
+  		super(props);
+  		if (typeof window != 'undefined') window.auth = props.auth;
+		}
+		
 		render() {
 			if (this.props.auth.loggedIn) {
 				return <Component {...this.props}/>

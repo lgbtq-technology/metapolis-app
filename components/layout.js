@@ -1,21 +1,21 @@
-import React from 'react'
+import React from 'react';
+import Head from 'next/head';
+
 export default class extends React.Component {
   render() {
-    return <html>
-      <head>
-        <title> Slack Helper </title>
+    return <div>
+      <Head>
+        <title> {this.props.auth ? this.props.auth.token.team_name : '' } Slack Helper </title>
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet"/>
         <link rel='stylesheet' href='/static/site.css'/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-      </head>
-      <body>
-        <header className='Masthead Masthead-dark'>
-          <h1> Slack Helper </h1>
-        </header>
-        <main>
-          {this.props.children}
-        </main>
-      </body>
-    </html>
+      </Head>
+      <header className='Masthead Masthead-dark'>
+        <h1> {this.props.auth ? this.props.auth.token.team_name : '' } Slack Helper </h1>
+      </header>
+      <main>
+        {this.props.children}
+      </main>
+    </div>
   }
 }

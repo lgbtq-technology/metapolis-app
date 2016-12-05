@@ -5,7 +5,7 @@ import AuthRequired from '../components/auth-required';
 
 export default AuthRequired(class extends React.Component {
 	render () {
-		return <Layout>
+		return <Layout auth={this.props.auth}>
 			<Menu/>
 		</Layout>;
 	}
