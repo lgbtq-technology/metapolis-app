@@ -36,6 +36,7 @@ export default (Component) => {
             redirect_uri: `http://${req.headers.host}/auth`,
             code: url.parse(req.url, true).query.code
           });
+          
           if (!body.access_token) {
             throw new Error("No access token granted");
           }
