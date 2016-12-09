@@ -50,7 +50,8 @@ export default (Component) => {
           res.setHeader('Set-Cookie', cookie.serialize('auth', tok));
           return {
             loggedIn: true,
-            token: tok
+            token: tok,
+            nextUrl: query.state
           };
         } else if (token) {
           return {
@@ -60,12 +61,18 @@ export default (Component) => {
         }
 
         return {
-          authurl: `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user&redirect_uri=${self}`
+          authurl: `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user&redirect_uri=${self}&state=${req.url}`
         }
       } else {
         if (window.auth) {
           return window.auth
         }
+      }
+    }
+
+    componentWillMount() {
+      if (this.props.auth.nextUrl) {
+        this.props.url.replaceTo(this.props.auth.nextUrl);
       }
     }
 

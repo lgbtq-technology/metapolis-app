@@ -4,6 +4,6 @@ import AuthRequired from '../components/auth-required';
 
 export default AuthRequired(class extends React.Component {
 	render () {
-		return <Layout><div>Hello</div></Layout>;
+		return <Layout><div>Logging You In...</div></Layout>;
 	}
 })
