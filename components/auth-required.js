@@ -50,7 +50,7 @@ export default (Component) => {
           res.setHeader('Set-Cookie', cookie.serialize('auth', tok));
           return {
             loggedIn: true,
-            token: tok,
+            token: body,
             nextUrl: query.state
           };
         } else if (token) {
