@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
-export default () => <div>
-  <Link href='/'>Home</Link>
-  <Link href='/purge'>Purge Private Files</Link>
-</div>;
+export default () => <nav>
+  <p><Link href='/'>Home</Link></p>
+  <p><Link href='/purge'>Purge Private Files</Link></p>
+  <p><Link href='/upload'>Upload File</Link></p>
+</nav>;
