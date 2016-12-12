@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '../components/layout';
 import AuthRequired from '../components/auth-required';
+import fetch from 'isomorphic-fetch';
 
 export default class extends React.Component {
     static async getInitialProps(ctx) {
