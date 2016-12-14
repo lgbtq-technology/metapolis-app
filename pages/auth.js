@@ -2,6 +2,7 @@ import React from 'react';
 import Layout from '../components/layout';
 import AuthRequired from '../components/auth-required';
 import fetch from 'isomorphic-fetch';
+import cookie from 'cookie';
 
 export default class extends React.Component {
     static async getInitialProps(ctx) {
@@ -26,17 +27,26 @@ export default class extends React.Component {
           }
         }).then(req => req.json());
 
-        if (!body.access_token) {
+        if (!body.token) {
           throw new Error("No access token granted");
         }
 
+	if (body.sid) {
+	    if (res) {
+		res.setHeader('Set-Cookie', cookie.serialize('session', body.sid));
+	    } else {
+		document.cookie = cookie.serialize('session', body.sid);
+	    }
+	}
+
         return {
-          token: body,
+	  ...body,
           nextUrl: query.state
         };
       } else if (typeof window != 'undefined' && window.auth) {
         return window.auth
       } else {
+	const client_id = process.env.SLACK_APP_CLIENT_ID;
         return {
           authurl: `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user&redirect_uri=${self}&state=${req.url}`
         }
