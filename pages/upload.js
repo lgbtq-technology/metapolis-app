@@ -2,6 +2,7 @@ import React from 'react';
 import Layout from '../components/layout';
 import AuthRequired from '../components/auth-required';
 import Drop from 'react-drop-to-upload';
+import fetch from 'isomorphic-fetch';
 
 export default AuthRequired(class extends React.Component {
   constructor(props) {
@@ -25,8 +26,20 @@ export default AuthRequired(class extends React.Component {
     </Layout>;
   }
 
-  handleDrop(drop) {
-    console.warn(drop);
+  async handleDrop(drop) {
+    const data = new FormData();
+    let n = 0;
+    drop.forEach(f => data.append(`file-${n++}`, f))
+    data.append('sid', this.props.auth.sid)
+    const result = await fetch(`http://localhost:3001/-/upload`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Token ${this.props.auth.sid}`
+      },
+      body: data
+    })
+
+    console.warn(drop, result, await result.json());
   }
 
   handleOver() {
