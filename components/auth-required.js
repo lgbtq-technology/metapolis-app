@@ -34,7 +34,7 @@ export default (Component) => {
         return window.auth
       } else {
         return {
-          authurl: `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user&redirect_uri=${self}&state=${pathname}`
+          authurl: `https://slack.com/oauth/authorize?client_id=${client_id}&scope=files:read%20files:write:user%20channels:read&redirect_uri=${self}&state=${pathname}`
         }
       }
     }

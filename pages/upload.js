@@ -3,6 +3,7 @@ import Layout from '../components/layout';
 import AuthRequired from '../components/auth-required';
 import Drop from 'react-drop-to-upload';
 import fetch from 'isomorphic-fetch';
+import slackFetch from '../lib/slack-fetch';
 
 export default AuthRequired(class extends React.Component {
   constructor(props) {
@@ -14,7 +15,10 @@ export default AuthRequired(class extends React.Component {
 
   render() {
     return <Layout auth={this.props.auth}>
-      <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
+    {
+      this.state.metadata
+      ? <ChannelPicker auth={this.props.auth}>...</ChannelPicker>
+      : <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
         {
           this.state.active ?
             <h1>Drop file to upload</h1>
@@ -23,6 +27,7 @@ export default AuthRequired(class extends React.Component {
         }
         { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
       </Drop>
+    }
     </Layout>;
   }
 
@@ -39,7 +44,9 @@ export default AuthRequired(class extends React.Component {
       body: data
     })
 
-    console.warn(drop, result, await result.json());
+    const metadata = await result.json();
+
+    this.setState({ metadata });
   }
 
   handleOver() {
@@ -64,4 +71,34 @@ class FileInput extends React.Component {
     }
   }
 
+}
+
+class ChannelPicker extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {};
+
+    const channelsP = slackFetch('https://slack.com/api/channels.list', {
+        token: props.auth.token.access_token,
+    })
+
+    channelsP.then(res => {
+      this.setState({channels: res.channels.filter(c => !c.is_archived && c.is_member)})
+    });
+
+  }
+
+  render() {
+    return this.state.channels ? <div><h2>Channels</h2>{
+      this.state.channels.map(c => <div key={c.id} onClick={this.clickHandler(c.id)}>{c.id} - {c.name}</div>)
+    }</div> : <div>loading channels...</div>
+  }
+
+  clickHandler(id) {
+    return (e) => {
+      //slackFetch.then(
+      console.warn(id);
+    }
+  }
 }
