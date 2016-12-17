@@ -20,9 +20,13 @@ export default (Component) => {
       const self = `http://${req ? req.headers.host : window.location.host }/auth`;
       const session = req && req.headers.cookie && cookie.parse(req.headers.cookie).session
       if (req && session) {
-        const token = await fetch(`http://localhost:3001/-/session/${session}`).then(res => res.json())
-        if (token) {
-          return { token };
+        try {
+          const token = await fetch(`http://localhost:3001/-/session/${session}`).then(res => res.json())
+          if (token) {
+            return { token };
+          }
+        } catch (e) {
+          console.warn(e)
         }
       }
       
