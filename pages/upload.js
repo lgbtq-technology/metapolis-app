@@ -5,7 +5,12 @@ import Drop from 'react-drop-to-upload';
 import fetch from 'isomorphic-fetch';
 import slackFetch from '../lib/slack-fetch';
 
-export default AuthRequired(class extends React.Component {
+const PERMS = [
+  'channels:read',
+  'chat:write:user',
+]
+
+export default AuthRequired(PERMS, class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
