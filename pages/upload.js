@@ -22,7 +22,7 @@ export default AuthRequired(PERMS, class extends React.Component {
     return <Layout auth={this.props.auth}>
     {
       this.state.metadata
-      ? <ChannelPicker auth={this.props.auth}>...</ChannelPicker>
+      ? <ChannelPicker auth={this.props.auth} onSelect={id => this.handleChannel(id)}>...</ChannelPicker>
       : <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
         {
           this.state.active ?
@@ -34,6 +34,16 @@ export default AuthRequired(PERMS, class extends React.Component {
       </Drop>
     }
     </Layout>;
+  }
+
+  async handleChannel(id) {
+    const res = await slackFetch('https://slack.com/api/chat.postMessage', {
+      token: this.props.auth.token.access_token,
+      channel: id,
+      parse: true,
+      as_user: true,
+      text: `Hello, world ${this.state.metadata[0].path}`
+    });
   }
 
   async handleDrop(drop) {
@@ -97,14 +107,11 @@ class ChannelPicker extends React.Component {
 
   render() {
     return this.state.channels ? <div><h2>Channels</h2>{
-      this.state.channels.map(c => <div key={c.id} onClick={this.clickHandler(c.id)}>{c.id} - {c.name}</div>)
+      this.state.channels.map(c => <div key={c.id} onClick={() => this.handleClick(c.id)}>{c.id} - {c.name}</div>)
     }</div> : <div>loading channels...</div>
   }
 
-  clickHandler(id) {
-    return (e) => {
-      //slackFetch.then(
-      console.warn(id);
-    }
+  handleClick(id) {
+    if (this.props.onSelect) this.props.onSelect(id);
   }
 }
