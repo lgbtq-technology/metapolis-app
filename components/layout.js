@@ -1,5 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 
 export default class extends React.Component {
   render() {
@@ -12,6 +13,7 @@ export default class extends React.Component {
       </Head>
       <header className='Masthead Masthead-dark'>
         <h1> {this.props.auth ? this.props.auth.token.team_name : '' } Slack Helper </h1>
+        <Link href='/'>Home</Link>
       </header>
       <main>
         {this.props.children}
