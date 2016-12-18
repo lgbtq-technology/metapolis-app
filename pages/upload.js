@@ -85,11 +85,12 @@ class ChannelPicker extends React.Component {
     this.state = {};
 
     const channelsP = slackFetch('https://slack.com/api/channels.list', {
-        token: props.auth.token.access_token,
+      exclude_archived: 1,
+      token: props.auth.token.access_token,
     })
 
     channelsP.then(res => {
-      this.setState({channels: res.channels.filter(c => !c.is_archived && c.is_member)})
+      this.setState({channels: res.channels.filter(c => c.is_member)})
     });
 
   }
