@@ -4,16 +4,45 @@ import Layout from '../components/layout';
 import purgeFiles from '../lib/purge-files';
 
 export default AuthRequired(class extends React.Component {
+  constructor (props) {
+    super(props);
+    this.state = { days: 7, working: false, npurged: null }
+
+  }
   async purgeFiles(ev) {
+    this.setState({ working: true });
     ev.preventDefault()
-    const nfiles = await purgeFiles(this.props.auth.token)
+    const nfiles = await purgeFiles({
+      token: this.props.auth.token,
+      days: this.state.days
+    });
+
+    this.setState({ npurged: nfiles });
+  }
+
+  handleChange(ev) {
+    this.setState({days: Number(ev.target.value)});
+  }
+
+  reset() {
+    this.setState({working: false, npurged: null });
   }
   
   render() {
     return <Layout auth={this.props.auth}>
-      <form action='/purge' method='post' onSubmit={this.purgeFiles.bind(this)}>
-        <button className='Button Button-dark' type='submit'>Purge private files</button>
-      </form>
+      {
+        this.state.npurged != null
+          ? <div>
+              <p>{this.state.npurged} file(s) purged.</p>
+              <button onClick={() => this.reset()}>Ok</button>
+            </div>
+          : this.state.working
+            ?  <div>Purging...</div>
+            : <form action='/purge' method='post' onSubmit={this.purgeFiles.bind(this)}>
+                <p>Purge private files older than <input name="days" value={this.state.days} onChange={e => this.handleChange(e)} type="number" size="2" /> days old?</p>
+                <button className='Button Button-dark' type='submit'>Purge</button>
+              </form>
+      }
   
     </Layout>
   }
