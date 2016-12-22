@@ -3,6 +3,8 @@ import Layout from '../components/layout';
 import AuthRequired from '../components/auth-required';
 import fetch from 'isomorphic-fetch';
 import cookie from 'cookie';
+import url from 'url';
+import config from '../config';
 
 export default class extends React.Component {
     static async getInitialProps(ctx) {
@@ -16,7 +18,7 @@ export default class extends React.Component {
     static async getAuthProps({req, res, query}) {
       const self = `http://${req ? req.headers.host : window.location.host }/auth`;
       if (query.code) {
-        const body = await fetch('http://localhost:3001/-/login', {
+        const body = await fetch(url.resolve(config.api, '/-/login'), {
           method: 'POST',
           body: JSON.stringify({
             ...query,

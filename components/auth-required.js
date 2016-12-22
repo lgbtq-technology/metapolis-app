@@ -1,6 +1,9 @@
-import React from 'react';
 import Auth from './auth';
+import React from 'react';
+import config from '../config';
 import cookie from 'cookie';
+import fetch from 'isomorphic-fetch';
+import url from 'url';
 
 const DEFAULT_PERMS = [
   'files:read',
@@ -29,12 +32,12 @@ export default (perms, Component) => {
     }
 
     static async getAuthProps({req, res, query}) {
-      const session = req && req.headers.cookie && cookie.parse(req.headers.cookie).session
-      if (req && session) {
+      const sid = req && req.headers.cookie && cookie.parse(req.headers.cookie).session
+      if (req && sid) {
         try {
-          const token = await fetch(`http://localhost:3001/-/session/${session}`).then(res => res.json())
+          const token = await fetch(url.resolve(config.api, `/-/session/${sid}`)).then(res => res.json())
           if (token && scopesMatch(token.scope, perms)) {
-            return { token };
+            return { token, sid };
           }
         } catch (e) {
           console.warn(e)

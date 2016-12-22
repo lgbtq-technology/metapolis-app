@@ -4,6 +4,8 @@ import AuthRequired from '../components/auth-required';
 import Drop from 'react-drop-to-upload';
 import fetch from 'isomorphic-fetch';
 import slackFetch from '../lib/slack-fetch';
+import url from 'url';
+import config from '../config';
 
 const PERMS = [
   'channels:read',
@@ -42,7 +44,7 @@ export default AuthRequired(PERMS, class extends React.Component {
       channel: id,
       parse: true,
       as_user: true,
-      text: `Hello, world ${this.state.metadata[0].path}`
+      text: `${config.api}${this.state.metadata[0].path}`
     });
   }
 
@@ -51,7 +53,7 @@ export default AuthRequired(PERMS, class extends React.Component {
     let n = 0;
     drop.forEach(f => data.append(`file-${n++}`, f))
     data.append('sid', this.props.auth.sid)
-    const result = await fetch(`http://localhost:3001/-/upload`, {
+    const result = await fetch(url.resolve(config.api, '/-/upload'), {
       method: 'POST',
       headers: {
         'Authorization': `Token ${this.props.auth.sid}`
