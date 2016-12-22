@@ -4,12 +4,6 @@ import Layout from '../components/layout';
 import purgeFiles from '../lib/purge-files';
 
 export default AuthRequired(class extends React.Component {
-  static async getInitialProps({req}) {
-    if (req && req.method == 'post') {
-      
-    }
-  }
-
   async purgeFiles(ev) {
     ev.preventDefault()
     const nfiles = await purgeFiles(this.props.auth.token)
