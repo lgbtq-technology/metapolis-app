@@ -24,7 +24,7 @@ export default AuthRequired(PERMS, class extends React.Component {
     return <Layout auth={this.props.auth}>
     {
       this.state.metadata
-      ? <ChannelPicker auth={this.props.auth} onSelect={id => this.handleChannel(id)}>...</ChannelPicker>
+      ? <ChannelPicker auth={this.props.auth} onSelect={id => this.handleChannel(id)}>Loading channels...</ChannelPicker>
       : <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
         {
           this.state.active ?
@@ -104,13 +104,12 @@ class ChannelPicker extends React.Component {
     channelsP.then(res => {
       this.setState({channels: res.channels.filter(c => c.is_member)})
     });
-
   }
 
   render() {
     return this.state.channels ? <div><h2>Channels</h2>{
-      this.state.channels.map(c => <div key={c.id} onClick={() => this.handleClick(c.id)}>{c.id} - {c.name}</div>)
-    }</div> : <div>loading channels...</div>
+      this.state.channels.map(c => <p key={c.id} onClick={() => this.handleClick(c.id)}>{c.id}: {c.name}</p>)
+    }</div> : <div>{this.props.children}</div>
   }
 
   handleClick(id) {
