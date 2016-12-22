@@ -71,8 +71,6 @@ function scopesMatch(user, required) {
     user = user.split(',');
   }
 
-  console.warn(required, user);
-
   const userSet = new Set(user);
 
   for (let requirement of required) {
