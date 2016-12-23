@@ -23,7 +23,7 @@ export default (perms, Component) => {
       const {query, req} = ctx;
       const superProps = typeof Component.getInitialProps == 'function' ? await Component.getInitialProps(ctx) : {}
       const auth = await this.getAuthProps(ctx);
-      const self = `http://${req ? req.headers.host : window.location.host }/auth`;
+      const self = url.resolve(config.self, '/auth');
       return {
         ...superProps,
         authurl: `https://slack.com/oauth/authorize?client_id=${client_id}&scope=${encodeURIComponent(perms.join(' '))}&redirect_uri=${self}&state=${ctx.pathname}`,

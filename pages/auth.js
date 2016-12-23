@@ -16,7 +16,7 @@ export default class extends React.Component {
     }
 
     static async getAuthProps({req, res, query}) {
-      const self = `http://${req ? req.headers.host : window.location.host }/auth`;
+      const self = url.resolve(config.self, '/auth');
       if (query.code) {
         const body = await fetch(url.resolve(config.api, '/-/login'), {
           method: 'POST',

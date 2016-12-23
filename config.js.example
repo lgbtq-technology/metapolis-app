@@ -1,3 +1,4 @@
 export default {
-    api: 'https://api.yayforqueers.net/'
+    api: 'https://api.yayforqueers.net/',
+    self: 'https://service/'
 }
