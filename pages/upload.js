@@ -44,7 +44,7 @@ export default AuthRequired(PERMS, class extends React.Component {
       channel: id,
       parse: true,
       as_user: true,
-      text: `${config.api}${this.state.metadata[0].path}`
+      text: `${url.resolve(config.api, this.state.metadata[0].path)}`
     });
   }
 
