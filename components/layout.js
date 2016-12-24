@@ -10,7 +10,7 @@ export default class extends React.Component {
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
       </Head>
-      <header className='Masthead Masthead-dark'>
+      <header className='Masthead'>
         <h1> {this.props.auth ? this.props.auth.token.team_name : '' } Slack Helper </h1>
         <Link href='/'><a style={ { color: 'white' , textDecoration: 'none' } }>Home</a></Link>
       </header>
@@ -23,11 +23,7 @@ export default class extends React.Component {
           margin: 3em auto;
         }
         .Masthead {
-          background-color: #bbb;
           padding: 1em;
-        }
-
-        .Masthead-dark {
           background-color: #4D394B;
           color: #AB9BA9;
         }
