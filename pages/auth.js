@@ -57,7 +57,7 @@ export default class extends React.Component {
 
     componentWillMount() {
       if (this.props.auth.nextUrl) {
-        this.props.url.replaceTo(this.props.auth.nextUrl);
+        this.props.url.replace(this.props.auth.nextUrl);
       }
     }
 
