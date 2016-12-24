@@ -7,7 +7,7 @@ export default AuthRequired(class extends React.Component {
 
   logout() {
     document.cookie = "session=";
-    global.location = '/';
+    window.location = '/';
   }
 
   render() {
