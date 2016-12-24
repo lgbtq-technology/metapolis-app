@@ -12,7 +12,7 @@ export default class extends React.Component {
       </Head>
       <header className='Masthead Masthead-dark'>
         <h1> {this.props.auth ? this.props.auth.token.team_name : '' } Slack Helper </h1>
-        <Link href='/'>Home</Link>
+        <Link href='/'><a style={ { color: 'white' , textDecoration: 'none' } }>Home</a></Link>
       </header>
       <main>
         {this.props.children}
