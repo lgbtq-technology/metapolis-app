@@ -52,7 +52,7 @@ export default (perms, Component) => {
     constructor(props) {
       super(props)
       if (props.auth && props.auth.token) {
-        global.auth = props.auth
+        window.auth = props.auth
       }
     }
 
