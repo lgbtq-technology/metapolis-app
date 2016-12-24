@@ -28,13 +28,18 @@ export default AuthRequired(PERMS, class extends React.Component {
       : <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
         {
           this.state.active ?
-            <h1>Drop file to upload</h1>
+            <h2>Drop file to upload</h2>
           :
-            <h1>Drag file here</h1>
+            <h2>Drag file here</h2>
         }
         { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
       </Drop>
     }
+        <style jsx>{`
+          h2 {
+            font-size: 1.5rem;
+          }
+      `}</style>
     </Layout>;
   }
 

@@ -2,6 +2,7 @@ import React from 'react';
 import AuthRequired from '../components/auth-required';
 import Layout from '../components/layout';
 import purgeFiles from '../lib/purge-files';
+import Button from '../components/button';
 
 export default AuthRequired(class extends React.Component {
   constructor (props) {
@@ -34,13 +35,13 @@ export default AuthRequired(class extends React.Component {
         this.state.npurged != null
           ? <div>
               <p>{this.state.npurged} file(s) purged.</p>
-              <button onClick={() => this.reset()}>Ok</button>
+              <Button onClick={() => this.reset()}>Ok</Button>
             </div>
           : this.state.working
             ?  <div>Purging...</div>
             : <form action='/purge' method='post' onSubmit={this.purgeFiles.bind(this)}>
                 <p>Purge private files older than <input name="days" value={this.state.days} onChange={e => this.handleChange(e)} type="number" size="2" /> days old?</p>
-                <button className='Button Button-dark' type='submit'>Purge</button>
+                <Button type='submit'>Purge</Button>
               </form>
       }
   
