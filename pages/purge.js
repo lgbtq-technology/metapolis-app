@@ -35,13 +35,13 @@ export default AuthRequired(class extends React.Component {
         this.state.npurged != null
           ? <div>
               <p>{this.state.npurged} file(s) purged.</p>
-              <Button onClick={() => this.reset()}>Ok</Button>
+              <Button onClick={() => this.reset()} dark>Ok</Button>
             </div>
           : this.state.working
             ?  <div>Purging...</div>
             : <form action='/purge' method='post' onSubmit={this.purgeFiles.bind(this)}>
                 <p>Purge private files older than <input name="days" value={this.state.days} onChange={e => this.handleChange(e)} type="number" size="2" /> days old?</p>
-                <Button type='submit'>Purge</Button>
+                <Button type='submit' dark>Purge</Button>
               </form>
       }
   
