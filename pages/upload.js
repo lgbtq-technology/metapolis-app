@@ -44,13 +44,16 @@ export default AuthRequired(PERMS, class extends React.Component {
   }
 
   async handleChannel(id) {
-    const res = await slackFetch('https://slack.com/api/chat.postMessage', {
-      token: this.props.auth.token.access_token,
-      channel: id,
-      parse: true,
-      as_user: true,
-      text: `${url.resolve(config.api, this.state.metadata[0].path)}`
-    });
+    for (let md of this.state.metadata) {
+      const image = url.resolve(config.self, `/file?f=${md.team}/${md.user}/${md.file}`);
+      const res = await slackFetch('https://slack.com/api/chat.postMessage', {
+        token: this.props.auth.token.access_token,
+        channel: id,
+        parse: true,
+        as_user: true,
+        text: image
+      });
+    }
   }
 
   async handleDrop(drop) {
