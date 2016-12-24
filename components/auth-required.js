@@ -51,7 +51,7 @@ export default (perms, Component) => {
 
     constructor(props) {
       super(props)
-      if (props.auth && props.auth.token) {
+      if (typeof window != 'undefined' && props.auth && props.auth.token) {
         window.auth = props.auth
       }
     }
