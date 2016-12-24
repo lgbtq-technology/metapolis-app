@@ -67,7 +67,7 @@ export default class extends React.Component {
         window.auth = props.auth;
     }
 
-	render () {
-		return <Layout><div>Logging You In...</div></Layout>;
-	}
+    render () {
+	return <Layout><div>Logging You In...</div></Layout>;
+    }
 }
