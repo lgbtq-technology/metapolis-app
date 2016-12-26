@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from '../components/button';
 import Layout from '../components/layout';
 import AuthRequired from '../components/auth-required';
 import ChannelPicker from '../components/channel-picker';
@@ -25,28 +26,28 @@ export default AuthRequired(PERMS, class extends React.Component {
     return <Layout auth={this.props.auth}>
     {
       this.state.metadata
-      ? <ChannelPicker auth={this.props.auth} onSelect={id => this.handleChannel(id)}>Loading channels...</ChannelPicker>
-      : <FilePicker onFiles={drop => this.handleDrop(drop)} />
+      ? <form onSubmit={e => {e.preventDefault(); this.handleUpload()}}>
+          Share in? <ChannelPicker auth={this.props.auth} onSelect={channel => this.setState({channel})}>Loading channels...</ChannelPicker>
+          <Button disabled={!this.state.channel} dark>Share</Button>
+        </form>
+      : <FilePicker onFiles={drop => this.handleDrop(drop)}>
+      </FilePicker>
     }
-        <style jsx>{`
-          h2 {
-            font-size: 1.5rem;
-          }
-      `}</style>
     </Layout>;
   }
 
-  async handleChannel(id) {
+  async handleUpload() {
     for (let md of this.state.metadata) {
       const image = url.resolve(config.self, `/file?f=${md.team}/${md.user}/${md.file}`);
       await slackFetch('https://slack.com/api/chat.postMessage', {
         token: this.props.auth.token.access_token,
-        channel: id,
+        channel: this.state.channel,
         parse: true,
         as_user: true,
         text: image
       });
     }
+    this.props.url.push('/');
   }
 
   async handleDrop(drop) {
