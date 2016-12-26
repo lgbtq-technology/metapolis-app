@@ -17,7 +17,7 @@ export default AuthRequired(PERMS, class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      active: false
+      metadata: null
     };
   }
 
@@ -26,15 +26,7 @@ export default AuthRequired(PERMS, class extends React.Component {
     {
       this.state.metadata
       ? <ChannelPicker auth={this.props.auth} onSelect={id => this.handleChannel(id)}>Loading channels...</ChannelPicker>
-      : <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
-        {
-          this.state.active ?
-            <h2>Drop file to upload</h2>
-          :
-            <h2>Drag file here</h2>
-        }
-        { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
-      </Drop>
+      : <FilePicker onFiles={drop => this.handleDrop(drop)} />
     }
         <style jsx>{`
           h2 {
@@ -75,13 +67,6 @@ export default AuthRequired(PERMS, class extends React.Component {
     this.setState({ metadata });
   }
 
-  handleOver() {
-    this.setState({active: true});
-  }
-
-  handleLeave() {
-    this.setState({active: false});
-  }
 })
 
 class FileInput extends React.Component {
@@ -97,4 +82,37 @@ class FileInput extends React.Component {
     }
   }
 
+}
+
+class FilePicker extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      active: false
+    };
+  }
+
+  render() {
+     return <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
+        {
+          this.state.active ?
+            <h2>Drop file to upload</h2>
+          :
+            <h2>Drag file here</h2>
+        }
+        { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
+      </Drop>
+  }
+
+  handleOver() {
+    this.setState({active: true});
+  }
+
+  handleLeave() {
+    this.setState({active: false});
+  }
+
+  handleDrop(drop) {
+    if (this.props.onFiles) this.props.onFiles(drop);
+  }
 }
