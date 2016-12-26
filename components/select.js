@@ -37,6 +37,9 @@ export default class Select extends React.Component {
         </div>
       }
       <style jsx>{`
+        input {
+          width: 100%;
+        }
         .container {
           padding: 0.5em;
           border: solid 1px #ddf;
