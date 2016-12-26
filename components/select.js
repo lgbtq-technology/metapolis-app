@@ -4,11 +4,11 @@ import ReactDOM from 'react-dom';
 export default class Select extends React.Component {
   constructor(props) {
     super(props);
-    this.n = 0;
+    this.n = 1;
     this.state = {
-      out: -1,
-      clicked: -1,
-      in: false,
+      out: 0,
+      clicked: 0,
+      blurred: 0,
       focused: false,
       filter: '',
       selected: null
@@ -17,8 +17,9 @@ export default class Select extends React.Component {
 
   render() {
     const state = this.state;
-    return <div onMouseOver={() => this.setState({in: true})} onMouseLeave={() => this.setState({in: false, out: this.n++})}>
+    return <div onMouseLeave={() => this.setState({out: this.n++})}>
       <input
+        ref="input"
         type="text"
         value={state.filter}
         onChange={(ev) => this.setState({filter: ev.target.value})}
@@ -27,7 +28,7 @@ export default class Select extends React.Component {
         onBlur={() => this.setState({focused: false, blurred: this.n++})}
       />
       {
-        (state.focused || (state.out < state.blurred && state.clicked < state.blurred)) && <div className='container'>
+        (state.focused || state.out < state.blurred) && <div className='container'>
           {
             this.filtered().map(c => c.id == (state.selected || {}).id
                                 ? <div className="selected" key={c.id} ref="selected" onMouseUp={() => this.select(c)}>#{c.name}</div>
@@ -51,7 +52,8 @@ export default class Select extends React.Component {
   }
 
   select(selected) {
-    this.setState({clicked: this.n++, filter: selected.name });
+    ReactDOM.findDOMNode(this.refs.input).blur();
+    this.setState({filter: selected.name, out: 0, blurred: 0, clicked: 0, focused: false});
     if (this.props.onSelect) this.props.onSelect(selected);
   }
 
