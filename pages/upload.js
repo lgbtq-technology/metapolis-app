@@ -96,10 +96,9 @@ class FilePicker extends React.Component {
   render() {
      return <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
         {
-          this.state.active ?
-            <h2>Drop file to upload</h2>
-          :
-            <h2>Drag file here</h2>
+          this.state.active
+            ? <h2>Drop file to upload</h2>
+            : <h2>Drag file here</h2>
         }
         { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
       </Drop>
