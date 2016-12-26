@@ -1,4 +1,5 @@
 import React from 'react';
+import Select from './select';
 import slackFetch from '../lib/slack-fetch';
 
 export default class ChannelPicker extends React.Component {
@@ -18,9 +19,9 @@ export default class ChannelPicker extends React.Component {
   }
 
   render() {
-    return this.state.channels ? <div><h2>Channels</h2>{
-      this.state.channels.map(c => <p key={c.id} onClick={() => this.handleClick(c.id)}>{c.id}: {c.name}</p>)
-    }</div> : <div>{this.props.children}</div>
+    return this.state.channels
+      ? <Select list={this.state.channels} onSelect={c => this.handleClick(c.id)} />
+      : <div>{this.props.children}</div>
   }
 
   handleClick(id) {
