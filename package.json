@@ -41,9 +41,15 @@
       }
     },
     "rules": {
+      "react/jsx-uses-vars": "error",
+      "react/jsx-no-undef": "error",
+      "no-unused-vars": "error",
       "valid-typeof": "error",
       "no-undef": "error"
     },
+    "plugins": [
+      "react"
+    ],
     "env": {
       "es6": true,
       "browser": true,

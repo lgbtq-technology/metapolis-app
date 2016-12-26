@@ -1,6 +1,8 @@
 import React from 'react';
+import Button from '../components/button';
 import Layout from '../components/layout';
 import AuthRequired from '../components/auth-required';
+import ChannelPicker from '../components/channel-picker';
 import Drop from 'react-drop-to-upload';
 import fetch from 'isomorphic-fetch';
 import slackFetch from '../lib/slack-fetch';
@@ -16,7 +18,7 @@ export default AuthRequired(PERMS, class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      active: false
+      metadata: null
     };
   }
 
@@ -24,36 +26,28 @@ export default AuthRequired(PERMS, class extends React.Component {
     return <Layout auth={this.props.auth}>
     {
       this.state.metadata
-      ? <ChannelPicker auth={this.props.auth} onSelect={id => this.handleChannel(id)}>Loading channels...</ChannelPicker>
-      : <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
-        {
-          this.state.active ?
-            <h2>Drop file to upload</h2>
-          :
-            <h2>Drag file here</h2>
-        }
-        { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
-      </Drop>
+      ? <form onSubmit={e => {e.preventDefault(); this.handleUpload()}}>
+          Share in? <ChannelPicker auth={this.props.auth} onSelect={channel => this.setState({channel})}>Loading channels...</ChannelPicker>
+          <Button disabled={!this.state.channel} dark>Share</Button>
+        </form>
+      : <FilePicker onFiles={drop => this.handleDrop(drop)}>
+      </FilePicker>
     }
-        <style jsx>{`
-          h2 {
-            font-size: 1.5rem;
-          }
-      `}</style>
     </Layout>;
   }
 
-  async handleChannel(id) {
+  async handleUpload() {
     for (let md of this.state.metadata) {
       const image = url.resolve(config.self, `/file?f=${md.team}/${md.user}/${md.file}`);
-      const res = await slackFetch('https://slack.com/api/chat.postMessage', {
+      await slackFetch('https://slack.com/api/chat.postMessage', {
         token: this.props.auth.token.access_token,
-        channel: id,
+        channel: this.state.channel,
         parse: true,
         as_user: true,
         text: image
       });
     }
+    this.props.url.push('/');
   }
 
   async handleDrop(drop) {
@@ -74,13 +68,6 @@ export default AuthRequired(PERMS, class extends React.Component {
     this.setState({ metadata });
   }
 
-  handleOver() {
-    this.setState({active: true});
-  }
-
-  handleLeave() {
-    this.setState({active: false});
-  }
 })
 
 class FileInput extends React.Component {
@@ -98,29 +85,34 @@ class FileInput extends React.Component {
 
 }
 
-class ChannelPicker extends React.Component {
+class FilePicker extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {};
-
-    const channelsP = slackFetch('https://slack.com/api/channels.list', {
-      exclude_archived: 1,
-      token: props.auth.token.access_token,
-    })
-
-    channelsP.then(res => {
-      this.setState({channels: res.channels.filter(c => c.is_member)})
-    });
+    this.state = {
+      active: false
+    };
   }
 
   render() {
-    return this.state.channels ? <div><h2>Channels</h2>{
-      this.state.channels.map(c => <p key={c.id} onClick={() => this.handleClick(c.id)}>{c.id}: {c.name}</p>)
-    }</div> : <div>{this.props.children}</div>
+     return <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
+        {
+          this.state.active
+            ? <h2>Drop file to upload</h2>
+            : <h2>Drag file here</h2>
+        }
+        { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
+      </Drop>
   }
 
-  handleClick(id) {
-    if (this.props.onSelect) this.props.onSelect(id);
+  handleOver() {
+    this.setState({active: true});
+  }
+
+  handleLeave() {
+    this.setState({active: false});
+  }
+
+  handleDrop(drop) {
+    if (this.props.onFiles) this.props.onFiles(drop);
   }
 }
