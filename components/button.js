@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default props => <button type={props.type} className={'dark' in props ? 'dark' : null} disabled={props.disabled}>
+export default props => <button type={props.type} className={'dark' in props ? 'dark' : null} disabled={props.disabled} onClick={props.onClick}>
     {props.children}
     <style jsx>{`
         button {
