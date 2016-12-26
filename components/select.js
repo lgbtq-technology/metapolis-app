@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDom from 'react-dom';
+import ReactDOM from 'react-dom';
 
 export default class Select extends React.Component {
   constructor(props) {
@@ -58,7 +58,7 @@ export default class Select extends React.Component {
   componentDidUpdate() {
     const ref = this.refs.selected;
     if (ref) {
-      const node = ReactDom.findDOMNode(ref);
+      const node = ReactDOM.findDOMNode(ref);
       if (node) node.scrollIntoView()
     }
   }
