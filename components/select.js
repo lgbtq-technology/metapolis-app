@@ -7,6 +7,7 @@ export default class Select extends React.Component {
     this.n = 0;
     this.state = {
       out: -1,
+      clicked: -1,
       in: false,
       focused: false,
       filter: '',
@@ -15,20 +16,22 @@ export default class Select extends React.Component {
   }
 
   render() {
+    const state = this.state;
     return <div onMouseOver={() => this.setState({in: true})} onMouseLeave={() => this.setState({in: false, out: this.n++})}>
       <input
         type="text"
+        value={state.filter}
         onChange={(ev) => this.setState({filter: ev.target.value})}
         onKeyDown={ev => this.handleKeyDown(ev)}
         onFocus={() => this.setState({focused: true})}
         onBlur={() => this.setState({focused: false, blurred: this.n++})}
       />
       {
-        (this.state.focused || this.state.out < this.state.blurred) && <div className='container'>
+        (state.focused || (state.out < state.blurred && state.clicked < state.blurred)) && <div className='container'>
           {
-            this.filtered().map(c => c.id == this.state.selected
-                                ? <div className="selected" key={c.id} ref="selected" onMouseUp={() => this.select(c.id)}>#{c.name}</div>
-                                : <div key={c.id} onMouseUp={() => this.select(c.id)}>#{c.name}</div>)
+            this.filtered().map(c => c.id == (state.selected || {}).id
+                                ? <div className="selected" key={c.id} ref="selected" onMouseUp={() => this.select(c)}>#{c.name}</div>
+                                : <div key={c.id} onMouseUp={() => this.select(c)}>#{c.name}</div>)
           }
         </div>
       }
@@ -47,8 +50,9 @@ export default class Select extends React.Component {
     </div>;
   }
 
-  select(id) {
-    if (this.props.onSelect) this.props.onSelect(id);
+  select(selected) {
+    this.setState({clicked: this.n++, filter: selected.name });
+    if (this.props.onSelect) this.props.onSelect(selected);
   }
 
   componentDidUpdate() {
@@ -62,12 +66,12 @@ export default class Select extends React.Component {
   handleKeyDown(ev) {
     if (ev.key == 'ArrowDown' || ev.key == 'ArrowUp') {
       const direction = ev.key == 'ArrowDown' ? 1 : -1;
-      const selected = this.state.selected;
+      const selected = this.state.selected || {};
       const filtered = this.filtered();
-      const next = filtered[(filtered.findIndex(c => c.id == selected) + direction) % filtered.length].id
+      const next = filtered[(filtered.findIndex(c => c.id == selected.id) + direction) % filtered.length]
       this.setState({selected: next});
     } else if (ev.key == 'Enter') {
-      const selected = this.state.selected || (this.filtered().find(c => c.name == this.state.filter) || {}).id
+      const selected = this.state.selected || (this.filtered().find(c => c.name == this.state.filter) || {})
       this.select(selected);
     }
   }
