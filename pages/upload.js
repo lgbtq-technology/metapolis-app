@@ -19,6 +19,7 @@ export default AuthRequired(PERMS, class extends React.Component {
     super(props);
     this.state = {
       view: 'pick',
+      unfurl: true,
       metadata: null
     };
   }
@@ -31,8 +32,19 @@ export default AuthRequired(PERMS, class extends React.Component {
         </FilePicker>
       : this.state.view == 'confirm' ?
         <form onSubmit={e => {e.preventDefault(); this.handleUpload()}}>
-          <div><img src={URL.createObjectURL(this.state.files[0])}/></div>
+          {
+            this.state.files.map(file => <div><img src={URL.createObjectURL(file)}/></div>)
+          }
           <div>Share in? <ChannelPicker auth={this.props.auth} onSelect={channel => this.setState({channel})}>Loading channels...</ChannelPicker></div>
+          <div>
+            <label>
+              Unfurl image?
+              <input type="checkbox" name="unfurl" value="true" 
+                checked={this.state.unfurl}
+                onChange={e => this.setState({unfurl: e.target.checked })}
+              />
+            </label>
+          </div>
           <Button disabled={!this.state.channel} dark>Share</Button>
         </form>
       : <div/>
@@ -46,6 +58,7 @@ export default AuthRequired(PERMS, class extends React.Component {
     let n = 0;
     this.state.files.forEach(f => data.append(`file-${n++}`, f))
     data.append('sid', this.props.auth.sid)
+    data.append('unfurl', String(this.state.unfurl));
 
     const result = await fetch(url.resolve(config.api, '/-/upload'), {
       method: 'POST',

@@ -17,13 +17,14 @@ export default class extends React.Component {
     const ext = this.props.type.split('/')[1];
     const image = url.resolve(config.api, `/-/files/${this.props.team}/${this.props.user}/${this.props.file}.${ext}`);
     const title = this.props.title || this.props.name || "";
+    const unfurl = this.props.unfurl || this.props.unfurl == null;
     return <Layout>
       <Head>
         <meta name="twitter:card" content="summary_large_image"/>
         <meta name="twitter:title" content={title}/>
-        <meta name="twitter:image" content={image}/>
+        { unfurl && <meta name="twitter:image" content={image}/> }
         <meta property="og:title" content={title}/>
-        <meta property="og:image" content={image}/>
+        { unfurl && <meta property="og:image" content={image}/> }
         <meta property="og:image:type" content={this.props.type}/>
       </Head>
       {
