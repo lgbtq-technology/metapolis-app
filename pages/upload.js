@@ -18,6 +18,8 @@ export default AuthRequired(PERMS, class extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      view: 'pick',
+      unfurl: true,
       metadata: null
     };
   }
@@ -25,19 +27,50 @@ export default AuthRequired(PERMS, class extends React.Component {
   render() {
     return <Layout auth={this.props.auth}>
     {
-      this.state.metadata
-      ? <form onSubmit={e => {e.preventDefault(); this.handleUpload()}}>
-          Share in? <ChannelPicker auth={this.props.auth} onSelect={channel => this.setState({channel})}>Loading channels...</ChannelPicker>
+      this.state.view == 'pick' ?
+        <FilePicker onFiles={drop => this.handleDrop(drop)}>
+        </FilePicker>
+      : this.state.view == 'confirm' ?
+        <form onSubmit={e => {e.preventDefault(); this.handleUpload()}}>
+          {
+            this.state.files.map(file => <div><img src={URL.createObjectURL(file)}/></div>)
+          }
+          <div>Share in? <ChannelPicker auth={this.props.auth} onSelect={channel => this.setState({channel})}>Loading channels...</ChannelPicker></div>
+          <div>
+            <label>
+              Unfurl image?
+              <input type="checkbox" name="unfurl" value="true" 
+                checked={this.state.unfurl}
+                onChange={e => this.setState({unfurl: e.target.checked })}
+              />
+            </label>
+          </div>
           <Button disabled={!this.state.channel} dark>Share</Button>
         </form>
-      : <FilePicker onFiles={drop => this.handleDrop(drop)}>
-      </FilePicker>
+      : <div/>
+
     }
     </Layout>;
   }
 
   async handleUpload() {
-    for (let md of this.state.metadata) {
+    const data = new FormData();
+    let n = 0;
+    this.state.files.forEach(f => data.append(`file-${n++}`, f))
+    data.append('sid', this.props.auth.sid)
+    data.append('unfurl', String(this.state.unfurl));
+
+    const result = await fetch(url.resolve(config.api, '/-/upload'), {
+      method: 'POST',
+      headers: {
+        'Authorization': `Token ${this.props.auth.sid}`
+      },
+      body: data
+    })
+
+    const metadata = await result.json();
+
+    for (let md of metadata) {
       const image = url.resolve(config.self, `/file?f=${md.team}/${md.user}/${md.file}`);
       await slackFetch('https://slack.com/api/chat.postMessage', {
         token: this.props.auth.token.access_token,
@@ -50,22 +83,8 @@ export default AuthRequired(PERMS, class extends React.Component {
     this.props.url.push('/');
   }
 
-  async handleDrop(drop) {
-    const data = new FormData();
-    let n = 0;
-    drop.forEach(f => data.append(`file-${n++}`, f))
-    data.append('sid', this.props.auth.sid)
-    const result = await fetch(url.resolve(config.api, '/-/upload'), {
-      method: 'POST',
-      headers: {
-        'Authorization': `Token ${this.props.auth.sid}`
-      },
-      body: data
-    })
-
-    const metadata = await result.json();
-
-    this.setState({ metadata });
+  async handleDrop(files) {
+    this.setState({ files, view: 'confirm' });
   }
 
 })
