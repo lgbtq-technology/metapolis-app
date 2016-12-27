@@ -33,7 +33,7 @@ export default AuthRequired(PERMS, class extends React.Component {
       : this.state.view == 'confirm' ?
         <form onSubmit={e => {e.preventDefault(); this.handleUpload()}}>
           {
-            this.state.files.map(file => <div><img src={URL.createObjectURL(file)}/></div>)
+            this.state.files.map(file => <div class="image"><img src={URL.createObjectURL(file)}/></div>)
           }
           <div>Share in? <ChannelPicker auth={this.props.auth} onSelect={channel => this.setState({channel})}>Loading channels...</ChannelPicker></div>
           <div>
@@ -50,6 +50,15 @@ export default AuthRequired(PERMS, class extends React.Component {
       : <div/>
 
     }
+    <style jsx>{`
+      .image {
+        text-align: center;
+      }
+      img {
+        max-width: 60%;
+        max-height: 60%;
+      }
+    `}</style>
     </Layout>;
   }
 
