@@ -33,8 +33,13 @@ export default AuthRequired(PERMS, class extends React.Component {
       : this.state.view == 'confirm' ?
         <form onSubmit={e => {e.preventDefault(); this.handleUpload()}}>
           {
-            this.state.files.map(file => <div class="image"><img src={URL.createObjectURL(file)}/></div>)
+            this.state.files.map((file, i) => <div key={i} className="image"><img src={URL.createObjectURL(file)}/></div>)
           }
+          <div>
+            <label>
+              Title <input type="text" onChange={ev => this.setState({title: ev.target.value})} value={this.state.title} />
+            </label>
+          </div>
           <div>Share in? <ChannelPicker auth={this.props.auth} onSelect={channel => this.setState({channel})}>Loading channels...</ChannelPicker></div>
           <div>
             <label>
@@ -68,6 +73,7 @@ export default AuthRequired(PERMS, class extends React.Component {
     this.state.files.forEach(f => data.append(`file-${n++}`, f))
     data.append('sid', this.props.auth.sid)
     data.append('unfurl', String(this.state.unfurl));
+    data.append('title', String(this.state.title));
 
     const result = await fetch(url.resolve(config.api, '/-/upload'), {
       method: 'POST',
