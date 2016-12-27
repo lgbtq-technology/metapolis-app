@@ -14,7 +14,10 @@ export default (props) => (<div>
   </header>
   <main>
     {props.children}
+
+    <p>This site is maintained by <a href='http://dinhe.net/~aredridel'>Aria Stewart</a> and is an <a href='https://github.com/lgbtq-technology/lgbtq-helper-app'>an open project</a>. Contributions welcome!</p>
   </main>
+
   <style jsx>{`
     main {
       max-width: 50rem;
