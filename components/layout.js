@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 
-export default (props) => (<div>
+export default (props) => (<div className="root">
   <Head>
     <title> {props.auth ? props.auth.token.team_name : '' } Slack Helper </title>
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet"/>
@@ -15,14 +15,31 @@ export default (props) => (<div>
   <main>
     {props.children}
 
-    <p>This site is maintained by <a href='http://dinhe.net/~aredridel'>Aria Stewart</a> and is an <a href='https://github.com/lgbtq-technology/lgbtq-helper-app'>an open project</a>. Contributions welcome!</p>
   </main>
+  <footer>
+    <p>This site is maintained by <a href='http://dinhe.net/~aredridel'>Aria Stewart</a> and is an <a href='https://github.com/lgbtq-technology/lgbtq-helper-app'>an open project</a>. Contributions welcome!</p>
+  </footer>
 
   <style jsx>{`
+    .root {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      flex: 1 0 auto;
+    }
+
     main {
+      flex-direction: column;
+      flex: 1 0 auto;
       max-width: 50rem;
       margin: 3em auto;
     }
+
+    footer {
+      text-align: center;
+      margin: 1em;
+    }
+
     .Masthead {
       padding: 1em;
       background-color: #4D394B;
@@ -49,6 +66,7 @@ export default (props) => (<div>
       color: black;
       background-color: white;
       font-family: 'Lato', 'Helvetica', sans-serif;
+      min-height: 100%;
     }
 
     *, *:before, *:after {
@@ -56,8 +74,15 @@ export default (props) => (<div>
       line-height: inherit;
     }
 
-    html, body {
+    html, body, body>div:first-child, body>div>div  {
+      display: flex;
+      flex-direction: column;
+      flex: 1 0 auto;
       margin: 0;
+    }
+
+    body>div:last-child {
+      display: none;
     }
   `}</style>
 </div>)
