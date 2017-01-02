@@ -71,7 +71,6 @@ export default AuthRequired(PERMS, class extends React.Component {
     const data = new FormData();
     let n = 0;
     this.state.files.forEach(f => data.append(`file-${n++}`, f))
-    data.append('sid', this.props.auth.sid)
     data.append('unfurl', String(this.state.unfurl));
     data.append('title', String(this.state.title));
 
