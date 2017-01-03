@@ -38,6 +38,9 @@ export default class extends React.Component {
           font-size: 1em;
           font-weight: 600;
         }
+        img {
+          max-width: 100%;
+        }
       `}</style>
     </Layout>;
   }
