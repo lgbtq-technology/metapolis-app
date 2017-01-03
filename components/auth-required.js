@@ -20,9 +20,8 @@ export default (perms, Component) => {
 
   return class extends React.Component {
     static async getInitialProps(ctx) {
-      const {query, req} = ctx;
-      const superProps = typeof Component.getInitialProps == 'function' ? await Component.getInitialProps(ctx) : {}
       const auth = await this.getAuthProps(ctx);
+      const superProps = typeof Component.getInitialProps == 'function' ? await Component.getInitialProps({ ...ctx, auth }) : {}
       const self = url.resolve(config.self, '/auth');
       return {
         ...superProps,
