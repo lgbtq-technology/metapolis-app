@@ -30,7 +30,7 @@ export default (perms, Component) => {
       };
     }
 
-    static async getAuthProps({req, res, query}) {
+    static async getAuthProps({req}) {
       const sid = req && req.headers.cookie && cookie.parse(req.headers.cookie).session
       if (req && sid) {
         try {
