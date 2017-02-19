@@ -43,7 +43,7 @@ export default AuthRequired(PERMS, class extends React.Component {
           <div>Share in? <ChannelPicker auth={this.props.auth} onSelect={channel => this.setState({channel})}>Loading channels...</ChannelPicker></div>
           <div>
             <label>
-              Unfurl image?
+              Unfurl image? (Show preview in channel; disable for NSFW images)
               <input type="checkbox" name="unfurl" value="true" 
                 checked={this.state.unfurl}
                 onChange={e => this.setState({unfurl: e.target.checked })}
