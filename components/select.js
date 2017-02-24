@@ -22,7 +22,7 @@ export default class Select extends React.Component {
         ref="input"
         type="text"
         value={state.filter}
-        onChange={(ev) => this.setState({filter: ev.target.value})}
+        onChange={(ev) => this.setState({filter: ev.target.value.toLowerCase()})}
         onKeyDown={ev => this.handleKeyDown(ev)}
         onFocus={() => this.setState({focused: true})}
         onBlur={() => this.setState({focused: false, blurred: this.n++})}
