@@ -28,32 +28,24 @@ export default class ChannelPicker extends React.Component {
       token: props.auth.token.access_token,
     });
 
-    // Fetch all channels
-    channelsP.then(channelRes => {
-        // Then fetch private groups
-        groupsP.then(groupRes => {
-          // Then fetch all users
-          usersP.then(usersRes => {
-              // Then fetch pms
-              pmP.then(pmRes => {
-                this.setChannels(channelRes, usersRes, groupRes, pmRes);
-              });
-            });
-        });
+    const allChannelsP = Promise.all([groupsP, channelsP, usersP, pmP]);
+
+    allChannelsP.then(([groupsRes, channelsRes, usersRes, pmsRes]) => {
+        this.setChannels(channelsRes, usersRes, groupsRes, pmsRes);
     });
   }
 
     /**
      * Set the state for the channel-picker based on the different responses (combination is needed)
-     * @param channelRes
+     * @param channelsRes
      * @param usersRes
-     * @param groupRes
-     * @param pmRes
+     * @param groupsRes
+     * @param pmsRes
      */
-  setChannels (channelRes, usersRes, groupRes, pmRes){
+  setChannels (channelsRes, usersRes, groupsRes, pmsRes){
         let usersMap = {};
-        let channels = [...channelRes.channels.filter(c => c.is_member), ...groupRes.groups];
-        let pmList = pmRes.ims;
+        let channels = [...channelsRes.channels.filter(c => c.is_member), ...groupsRes.groups];
+        let pmList = pmsRes.ims;
 
         // Calculate the user map
         usersRes.members.forEach(user => {
