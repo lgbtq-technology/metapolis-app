@@ -4,6 +4,7 @@ import Layout from '../components/layout';
 import AuthRequired from '../components/auth-required';
 import ChannelPicker from '../components/channel-picker';
 import Drop from 'react-drop-to-upload';
+import PasteImage from 'paste-image';
 import fetch from 'isomorphic-fetch';
 import slackFetch from '../lib/slack-fetch';
 import url from 'url';
@@ -16,7 +17,7 @@ const PERMS = [
   'groups:read',
   'im:read',
   'users:read',
-]
+];
 
 export default AuthRequired(PERMS, class extends React.Component {
   constructor(props) {
@@ -26,6 +27,21 @@ export default AuthRequired(PERMS, class extends React.Component {
       unfurl: true,
       metadata: null
     };
+
+    try {
+      // Listen for all image paste events on a page
+      PasteImage.on('paste-image', image => {
+          this.handlePaste(image);
+      });
+    } catch (error) {
+        console.log("error", error);
+    }
+  }
+
+  async handlePaste (image){
+      const result = await fetch(image.src);
+      const blob = await result.blob();
+      this.handleDrop([blob]);
   }
 
   render() {
