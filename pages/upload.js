@@ -9,9 +9,13 @@ import slackFetch from '../lib/slack-fetch';
 import url from 'url';
 import config from '../config';
 
+// Slack API AUTH scopes (per https://api.slack.com/docs/oauth-scopes)
 const PERMS = [
   'channels:read',
   'chat:write:user',
+  'groups:read',
+  'im:read',
+  'users:read',
 ]
 
 export default AuthRequired(PERMS, class extends React.Component {

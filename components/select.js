@@ -31,8 +31,8 @@ export default class Select extends React.Component {
         (state.focused || state.out < state.blurred) && <div className='container'>
           {
             this.filtered().map(c => c.id == (state.selected || {}).id
-                                ? <div className="selected" key={c.id} ref="selected" onMouseUp={() => this.select(c)}>#{c.name}</div>
-                                : <div key={c.id} onMouseUp={() => this.select(c)}>#{c.name}</div>)
+                                ? <div className="selected" key={c.id} ref="selected" onMouseUp={() => this.select(c)}>{c.is_im ? '@' : '#'}{c.name}</div>
+                                : <div key={c.id} onMouseUp={() => this.select(c)}>{c.is_im ? '@' : '#'}{c.name}</div>)
           }
         </div>
       }
