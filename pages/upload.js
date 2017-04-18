@@ -14,6 +14,8 @@ const PERMS = [
   'channels:read',
   'chat:write:user',
   'groups:read',
+  'im:read',
+  'users:read',
 ]
 
 export default AuthRequired(PERMS, class extends React.Component {
