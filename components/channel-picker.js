@@ -11,10 +11,20 @@ export default class ChannelPicker extends React.Component {
     const channelsP = slackFetch('https://slack.com/api/channels.list', {
       exclude_archived: 1,
       token: props.auth.token.access_token,
-    })
+    });
 
-    channelsP.then(res => {
-      this.setState({channels: res.channels.filter(c => c.is_member)})
+    const groupsP = slackFetch('https://slack.com/api/groups.list', {
+      exclude_archived: 1,
+      token: props.auth.token.access_token,
+    });
+
+    // Fetch all channels
+    channelsP.then(channelRes => {
+        // Then fetch private groups
+        groupsP.then(groupRes => {
+            let channels = [...channelRes.channels.filter(c => c.is_member), ...groupRes.groups];
+            this.setState({channels: channels})
+        });
     });
   }
 
