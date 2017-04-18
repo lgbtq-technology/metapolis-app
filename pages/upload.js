@@ -107,7 +107,16 @@ class FileInput extends React.Component {
   render() {
     const props = {...this.props};
     delete props.onFiles;
-    return <input ref='file' type='file' onChange={() => this.handleChange()} accept='image/*' {...props} />
+    return <span>
+      <input ref='file' type='file' onChange={() => this.handleChange()} accept='image/*' {...props} />
+      <style jsx>{`
+           span {
+               align-self: flex-end;
+               position: absolute;
+               bottom: 10px;
+           }
+      `}</style>
+    </span>
   }
 
   handleChange() {
@@ -128,12 +137,34 @@ class FilePicker extends React.Component {
 
   render() {
      return <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
-        {
-          this.state.active
-            ? <h2>Drop file to upload</h2>
-            : <h2>Drag file here</h2>
-        }
-        { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
+        <div className="fileUploadArea">
+          <span>
+          {
+            this.state.active
+              ? <h2>Drop file to upload</h2>
+              : <h2>Drag file here</h2>
+          }
+          </span>
+          { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
+        </div>
+        <style jsx>{`
+           .fileUploadArea {
+               background: rgba(200, 200, 200, 1);
+               padding: 10px;
+               width: 400px;
+               height: 300px;
+               border-radius: 5px;
+               justify-content: center;
+               position: relative;
+               align-items: center;
+               display: flex;
+               flex-direction: column;
+           }
+
+           h2{
+               align-self: flex-end;
+           }
+        `}</style>
       </Drop>
   }
 
