@@ -41,7 +41,8 @@ export default AuthRequired(PERMS, class extends React.Component {
   async handlePaste (image){
       const result = await fetch(image.src);
       const blob = await result.blob();
-      this.handleDrop([blob]);
+      const formattedBlob = blob.slice(0, blob.size, 'image/jpeg');
+      this.handleDrop([formattedBlob]);
   }
 
   render() {
@@ -161,8 +162,8 @@ class FilePicker extends React.Component {
           <span>
           {
             this.state.active
-              ? <h2>Drop file to upload</h2>
-              : <h2>Drag file here</h2>
+                ? <h2><span className="underline">Drop</span> file to upload</h2>
+                : <h2><span  className="underline">Drag</span> a file or <span className="underline">paste</span> an image here</h2>
           }
           </span>
           { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
@@ -180,6 +181,10 @@ class FilePicker extends React.Component {
                display: flex;
                flex-direction: column;
            }
+
+          .underline {
+              text-decoration: underline;
+          }
 
            h2{
                align-self: flex-end;
