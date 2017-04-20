@@ -4,6 +4,7 @@ import Layout from '../components/layout';
 import AuthRequired from '../components/auth-required';
 import ChannelPicker from '../components/channel-picker';
 import Drop from 'react-drop-to-upload';
+import PasteImage from 'paste-image';
 import fetch from 'isomorphic-fetch';
 import slackFetch from '../lib/slack-fetch';
 import url from 'url';
@@ -16,7 +17,7 @@ const PERMS = [
   'groups:read',
   'im:read',
   'users:read',
-]
+];
 
 export default AuthRequired(PERMS, class extends React.Component {
   constructor(props) {
@@ -26,6 +27,22 @@ export default AuthRequired(PERMS, class extends React.Component {
       unfurl: true,
       metadata: null
     };
+
+    try {
+      // Listen for all image paste events on a page
+      PasteImage.on('paste-image', image => {
+          this.handlePaste(image);
+      });
+    } catch (error) {
+        console.log("error", error);
+    }
+  }
+
+  async handlePaste (image){
+      const result = await fetch(image.src);
+      const blob = await result.blob();
+      const formattedBlob = blob.slice(0, blob.size, 'image/jpeg');
+      this.handleDrop([formattedBlob]);
   }
 
   render() {
@@ -145,8 +162,8 @@ class FilePicker extends React.Component {
           <span>
           {
             this.state.active
-              ? <h2>Drop file to upload</h2>
-              : <h2>Drag file here</h2>
+                ? <h2><span className="underline">Drop</span> file to upload</h2>
+                : <h2><span  className="underline">Drag</span> a file or <span className="underline">paste</span> an image here</h2>
           }
           </span>
           { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
@@ -164,6 +181,10 @@ class FilePicker extends React.Component {
                display: flex;
                flex-direction: column;
            }
+
+          .underline {
+              text-decoration: underline;
+          }
 
            h2{
                align-self: flex-end;
