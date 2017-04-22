@@ -27,15 +27,14 @@ export default AuthRequired(PERMS, class extends React.Component {
       unfurl: true,
       metadata: null
     };
+  }
 
-    try {
-      // Listen for all image paste events on a page
-      PasteImage.on('paste-image', image => {
-          this.handlePaste(image);
-      });
-    } catch (error) {
-        console.log("error", error);
-    }
+  componentDidMount() {
+    PasteImage.on('paste-image', image => this.handlePaste(image));
+  }
+
+  componentWillUnmount() {
+    PasteImage.removeAllListeners('paste-image');
   }
 
   async handlePaste (image){
