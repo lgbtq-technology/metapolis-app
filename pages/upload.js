@@ -127,16 +127,7 @@ class FileInput extends React.Component {
   render() {
     const props = {...this.props};
     delete props.onFiles;
-    return <span>
-      <input ref='file' type='file' onChange={() => this.handleChange()} accept='image/*' {...props} />
-      <style jsx>{`
-           span {
-               align-self: flex-end;
-               position: absolute;
-               bottom: 10px;
-           }
-      `}</style>
-    </span>
+    return <input ref='file' type='file' onChange={() => this.handleChange()} accept='image/*' {...props} />
   }
 
   handleChange() {
@@ -158,35 +149,28 @@ class FilePicker extends React.Component {
   render() {
      return <Drop onDrop={drop => this.handleDrop(drop)} onLeave={() => this.handleLeave()} onOver={() => this.handleOver()}>
         <div className="fileUploadArea">
-          <span>
           {
             this.state.active
-                ? <h2><span className="underline">Drop</span> file to upload</h2>
-                : <h2><span  className="underline">Drag</span> a file or <span className="underline">paste</span> an image here</h2>
+                ? <h2><u>Drop</u> file to upload</h2>
+                : <h2><u>Drag</u> a file or <span className="underline">paste</span> an image here</h2>
           }
-          </span>
           { this.state.active || <FileInput onFiles={drop => this.handleDrop(drop)} multiple /> }
         </div>
+
         <style jsx>{`
            .fileUploadArea {
+               display: flex;
+               align-items: center;
+               justify-items: space-around;
+               flex-direction: column;
+
                background: rgba(200, 200, 200, 1);
                padding: 10px;
-               width: 400px;
-               height: 300px;
+               max-width: calc(100vw - 5em);
+               min-height: 300px;
+               margin: 0px auto;
                border-radius: 5px;
                justify-content: center;
-               position: relative;
-               align-items: center;
-               display: flex;
-               flex-direction: column;
-           }
-
-          .underline {
-              text-decoration: underline;
-          }
-
-           h2{
-               align-self: flex-end;
            }
         `}</style>
       </Drop>
