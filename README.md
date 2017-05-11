@@ -26,12 +26,12 @@ Run this thing locally
 
 Clone the repository, `cd` into it, and `npm install`
 
-rename `/config.example.js` to `/config.js`, and update the `api` and `self` values. if you're just looking to contribute to the main instance at https://metapolis.space, you can simply change the values to:
+copy `/config.example.js` to `/config.js`, and update the `api` and `self` values. if you're just looking to contribute to the main instance at https://metapolis.space, you can simply change the values to:
 
 ```js
 {
   api: 'https://api.metapolis.space/',
-  self: 'https://metapolis.space/auth'
+  self: 'http://localhost:3000/auth'
 }
 
 ```
