@@ -21,3 +21,17 @@ This application is a [next.js](https://www.npmjs.com/package/next) application.
 
 There is a configuration file to tell the application its own URL (for constructing self-referntial URLs for OAuth2 use) and the URL of the API endpoint that serves it.
 
+Run this thing locally
+----------------------
+
+Clone the repository, `cd` into it, and `npm install`
+
+rename `/config.example.js` to `/config.js`, and update the `api` and `self` values. if you're just looking to contribute to the main instance at https://metapolis.space, you can simply change the values to:
+
+```js
+{
+  api: 'https://api.metapolis.space/',
+  self: 'https://metapolis.space/auth'
+}
+
+```
