@@ -17,15 +17,23 @@ export default AuthRequired(class extends React.Component {
     return await result.json();
   }
 
-  // {"user":"U038225J3","team":"T0383959N","file":"9B9826D7","name":"test","type":"image/png","unfurl":true,"path":"/-/files/T0383959N/U038225J3/9B9826D7.png"}
-
   render() {
-    console.warn(this.props);
-    return <Layout auth={this.props.auth}>
-      <h2>Your files</h2>
-      {
-        this.props.files ? this.props.files.map(file => <div key={file.file}><Link><a href={`/file?f=${file.team}/${file.user}/${file.file}`}>{ file.title || file.name || 'untitled' }</a></Link></div>) : "No files"
-      }
-    </Layout>;
+    const files = this.props.files ? this.props.files.map(file => (
+      <div key={file.file}>
+        <Link>
+          <a href={`/file?f=${file.team}/${file.user}/${file.file}`}>
+            { file.title || file.name || 'untitled' }
+          </a>
+        </Link>
+      </div>
+    )) : 'No files';
+
+    return(
+      <Layout auth={this.props.auth}>
+        <h2>Your files</h2>
+
+        { files }
+      </Layout>
+    );
   }
 })
