@@ -16,15 +16,19 @@ export default class extends React.Component {
   render() {
     const ext = this.props.type.split('/')[1];
     const image = url.resolve(config.api, `/-/files/${this.props.team}/${this.props.user}/${this.props.file}.${ext}`);
+    //const thumb = this.props.sizes['256x256'] || image;
+    const large = url.resolve(config.api, this.props.sizes['1000x1000'] || image);
     const title = this.props.title || this.props.name || "";
     const unfurl = this.props.unfurl || this.props.unfurl == null;
     return <Layout>
       <Head>
         <meta name="twitter:card" content="summary_large_image"/>
         <meta name="twitter:title" content={title}/>
-        { unfurl && <meta name="twitter:image" content={image}/> }
+        { unfurl && <meta name="twitter:image" content={large}/> }
         <meta property="og:title" content={title}/>
-        { unfurl && <meta property="og:image" content={image}/> }
+        { unfurl && <meta property="og:image" content={large}/> }
+        { unfurl && image != large && <meta property="og:image:width" content="1000"/> }
+        { unfurl && image != large && <meta property="og:image:height" content="1000"/> }
         <meta property="og:image:type" content={this.props.type}/>
       </Head>
       {
