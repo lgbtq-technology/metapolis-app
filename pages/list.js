@@ -24,7 +24,7 @@ export default AuthRequired(class extends React.Component {
     return <Layout auth={this.props.auth}>
       <h2>Your files</h2>
       {
-        this.props.files ? this.props.files.map(file => <div key={file.file}><Link href={`/file?f=${file.team}/${file.user}/${file.file}`}>{ file.title || file.name || 'untitled' }</Link></div>) : "No files"
+        this.props.files ? this.props.files.map(file => <div key={file.file}><Link><a href={`/file?f=${file.team}/${file.user}/${file.file}`}>{ file.title || file.name || 'untitled' }</a></Link></div>) : "No files"
       }
     </Layout>;
   }
