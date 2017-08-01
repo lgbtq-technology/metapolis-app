@@ -70,7 +70,7 @@ export default AuthRequired(PERMS, class extends React.Component {
               />
             </label>
           </div>
-          <Button disabled={!this.state.channel} dark>Share</Button>
+          <Button disabled={!this.state.channel || this.state.uploading} dark>Share</Button>
         </form>
       : <div/>
 
@@ -90,6 +90,7 @@ export default AuthRequired(PERMS, class extends React.Component {
   async handleUpload() {
     const data = new FormData();
     let n = 0;
+    this.state.uploading = true;
     this.state.files.forEach(f => data.append(`file-${n++}`, f))
     data.append('unfurl', String(this.state.unfurl));
     data.append('title', String(this.state.title));
@@ -114,6 +115,7 @@ export default AuthRequired(PERMS, class extends React.Component {
         text: image
       });
     }
+    this.state.uploading = false;
     this.props.url.push('/');
   }
 
