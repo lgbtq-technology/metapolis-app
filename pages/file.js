@@ -28,7 +28,7 @@ export default class extends React.Component {
         <meta property="og:title" content={title}/>
         { unfurl && <meta property="og:image" content={large}/> }
         { unfurl && image != large && <meta property="og:image:width" content="1000"/> }
-        { unfurl && image != large && <meta property="og:image:height" content="1000"/> }
+        /*{ unfurl && image != large && <meta property="og:image:height" content="1000"/> }*/
         <meta property="og:image:type" content={this.props.type}/>
       </Head>
       {
