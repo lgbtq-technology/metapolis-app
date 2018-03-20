@@ -36,10 +36,11 @@ export default class extends React.Component {
 	if (body.sid) {
 	    const expires = new Date();
 	    expires.setDate(expires.getDate() + 30);
+	    const sessionCookie = cookie.serialize('session', body.sid, { expires });
 	    if (res) {
-		res.setHeader('Set-Cookie', cookie.serialize('session', body.sid, { expires }));
+		res.setHeader('Set-Cookie', sessionCookie);
 	    } else {
-		document.cookie = cookie.serialize('session', body.sid, { expires });
+		document.cookie = sessionCookie;
 	    }
 	}
 
