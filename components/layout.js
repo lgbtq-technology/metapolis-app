@@ -10,7 +10,7 @@ export default (props) => (<div className="root">
   </Head>
   <header className='Masthead'>
     <h1> {props.auth ? props.auth.token.team_name : '' } Slack Helper </h1>
-    <Link><a href='/' style={ { color: 'white' , textDecoration: 'none' } }>Home</a></Link>
+    <Link href='/'><a style={ { color: 'white' , textDecoration: 'none' } }>Home</a></Link>
   </header>
   <main>
     {props.children}

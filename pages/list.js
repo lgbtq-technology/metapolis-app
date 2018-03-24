@@ -20,8 +20,8 @@ export default AuthRequired(class extends React.Component {
   render() {
     const files = this.props.files ? this.props.files.map(file => (
       <div key={file.file}>
-        <Link>
-          <a href={`/file?f=${file.team}/${file.user}/${file.file}`}>
+        <Link href={`/file?f=${file.team}/${file.user}/${file.file}`}>
+          <a>
             { file.title || file.name || 'untitled' }
           </a>
         </Link>
