@@ -22,7 +22,7 @@
     "babel-core": "^6.26.0",
     "bluebird": "^3.5.1",
     "cookie": "^0.3.1",
-    "ecstatic": "^3.1.1",
+    "ecstatic": "^3.2.0",
     "glob": "^7.1.2",
     "isomorphic-fetch": "^2.2.1",
     "jwt-simple": "^0.5.1",
