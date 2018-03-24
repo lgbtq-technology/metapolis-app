@@ -34,7 +34,7 @@
     "react-dom": "^16.2.0",
     "react-drop-to-upload": "^1.0.1",
     "trumpet": "^1.7.2",
-    "webpack": "^3.10.0"
+    "webpack": "^4.2.0"
   },
   "eslintConfig": {
     "parserOptions": {
