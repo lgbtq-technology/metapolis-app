@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/lgbtq-technology/lgbtq-helper-app#readme",
   "dependencies": {
-    "babel-core": "^6.26.0",
+    "babel-core": "^6.26.3",
     "bluebird": "^3.5.1",
     "cookie": "^0.3.1",
     "ecstatic": "^3.2.0",
@@ -29,12 +29,12 @@
     "next": "^6.0.3",
     "paste-image": "0.0.3",
     "pump": "^3.0.0",
-    "qs": "^6.5.1",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
-    "react-drop-to-upload": "^1.0.1",
+    "qs": "^6.5.2",
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0",
+    "react-drop-to-upload": "^1.0.2",
     "trumpet": "^1.7.2",
-    "webpack": "^4.2.0"
+    "webpack": "^4.8.3"
   },
   "eslintConfig": {
     "parserOptions": {
