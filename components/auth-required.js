@@ -59,7 +59,7 @@ export default (perms, Component) => {
       if (this.props.auth && this.props.auth.token && scopesMatch(this.props.auth.token.scope, perms)) {
         return <Component {...this.props}/>
       } else {
-        return <Auth authurl={this.props.authurl}/>
+        return <Auth upgrade={ this.props.auth && this.props.auth.token } authurl={this.props.authurl}/>
       }
     }
   }
