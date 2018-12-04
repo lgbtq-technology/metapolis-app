@@ -10,7 +10,10 @@ export default (props) => (<div className="root">
   </Head>
   <header className='Masthead'>
     <h1> {props.auth ? props.auth.token.team_name : '' } Slack Helper </h1>
-    <Link href='/'><a style={ { color: 'white' , textDecoration: 'none' } }>Home</a></Link>
+    <nav className="TopNav">
+      <Link href='/'><a style={ { color: 'white' , textDecoration: 'none' } }>Home</a></Link>
+      <Link href='/about'><a style={ { color: 'white' , textDecoration: 'none' } }>About</a></Link>
+    </nav>
   </header>
   <main>
     {props.children}
@@ -48,6 +51,14 @@ export default (props) => (<div className="root">
 
     h1 {
       font-size: 2rem;
+    }
+
+    .TopNav {
+      display: flex;
+    }
+
+    .TopNav a {
+      padding-right: 1rem;
     }
   `}</style>
 
