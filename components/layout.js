@@ -4,12 +4,12 @@ import Link from 'next/link';
 
 export default (props) => (<div className="root">
   <Head>
-    <title> {props.auth ? props.auth.token.team_name : '' } Slack Helper </title>
+    <title> {props.auth ? props.auth.token.team_name : '' } Metapolis Slack Helper </title>
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
   </Head>
   <header className='Masthead'>
-    <h1> {props.auth ? props.auth.token.team_name : '' } Slack Helper </h1>
+    <h1> {props.auth ? props.auth.token.team_name : '' } Metapolis Slack Helper </h1>
     <nav className="TopNav">
       <Link href='/'><a style={ { color: 'white' , textDecoration: 'none' } }>Home</a></Link>
       <Link href='/about'><a style={ { color: 'white' , textDecoration: 'none' } }>About</a></Link>
@@ -20,7 +20,7 @@ export default (props) => (<div className="root">
 
   </main>
   <footer>
-    <p>This site is maintained by <a href='http://dinhe.net/~aredridel'>Aria Stewart</a> and is an <a href='https://github.com/lgbtq-technology/lgbtq-helper-app'>an open project</a>. Contributions welcome!</p>
+    <p>This site is maintained by <a href='http://dinhe.net/~aredridel'>Aria Stewart</a> and is an <a href='https://github.com/lgbtq-technology/metapolis-app'>an open project</a>. Contributions welcome!</p>
   </footer>
 
   <style jsx>{`

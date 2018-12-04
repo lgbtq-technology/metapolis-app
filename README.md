@@ -1,7 +1,7 @@
 Slack Helper App
 ================
 
-A user interface for [the Slack Helper API](https://github.com/lgbtq-technology/lgbtq-helper-api), providing file hosting and posting to slacks as well as utility functions for managing Slack communities.
+A user interface for [the Metapolis Slack Helper API](https://github.com/lgbtq-technology/metapolis-app), providing file hosting and posting to slacks as well as utility functions for managing Slack communities.
 
 The main instance is available at https://metapolis.space/
 
