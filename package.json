@@ -20,7 +20,6 @@
   "homepage": "https://github.com/lgbtq-technology/lgbtq-helper-app#readme",
   "dependencies": {
     "babel-core": "^6.26.3",
-    "bluebird": "^3.5.2",
     "cookie": "^0.3.1",
     "ecstatic": "^3.3.2",
     "glob": "^7.1.3",
