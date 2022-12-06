@@ -27,7 +27,7 @@
     "next": "^9.3.2",
     "paste-image": "0.0.3",
     "pump": "^3.0.0",
-    "qs": "^6.9.1",
+    "qs": "^6.9.7",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-drop-to-upload": "^1.0.2",
